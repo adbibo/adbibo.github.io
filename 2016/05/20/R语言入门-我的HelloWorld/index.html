@@ -1,0 +1,128 @@
+<!DOCTYPE html><html lang="zh-cn"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=Edge"><meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"><meta name="format-detection" content="telephone=no"><meta name="format-detection" content="email=no"><meta name="description" content="君子所取者远，则必有所待，所就者大，则必有所忍，志大而量广，才有余而识具足，则必取其远，必就其大！！"><meta name="keywords" content="Hexo, Gruntjs, Nodejs, Reactjs, Vuejs"><title>R语言入门-我的HelloWorld - Lester</title><link rel="stylesheet" href="/css/main_style.min.css"><link rel="icon" href="/favicon.ico"><meta name="generator" content="Hexo 5.4.2"></head><body><input id="navi" type="checkbox"><ul class="main-navication"><li><a href="/"><span>Home</span></a></li><li><a target="_blank" rel="noopener" href="https://github.com"><span>Github</span></a></li><li><a target="_blank" rel="noopener" href="https://www.v2ex.com/"><span>V2EX</span></a></li></ul><div class="wrapper" id="wrap"><div class="post-header"><label class="navi-button light" for="navi">MENU</label><img class="background" src="http://callfiles.ueibo.com/hexo-theme-laughing/post_background.jpg"><div class="post-title"><h1 class="title">R语言入门-我的HelloWorld</h1><ul class="meta"><li><i class="icon icon-author"></i>Lester</li><li><i class="icon icon-clock"></i>5 Minutes</li><li><i class="icon icon-calendar"></i>May 20, 2016</li></ul></div></div><div class="article-content" style="max-width:800px"><p>前几天，主管拿到一份数据，让我做一个分城市统计，原本想先对数据做一些清洗，然后在excel中做一些统计分析。但是转念一想，全国300+的城市，展示是个难题，想到前几天看到组里面另外一个同事——就是我之前提到过的追兵同学，他之前做过一个数据展示的界面，还不错，于是要来他的源码，一知半解地边查资料、边咨询，最后做了一个统计结果的展示界面了，也算是我的R语言入门的HelloWorld了。下面开始我将详细介绍实现R语言代码，其中涉及到公司内部的数据、规格的名称、名词全部更替，最终的也不会放上任何展示界面。</p>
+<h1 id="1，数据预处理"><a href="#1，数据预处理" class="headerlink" title="1，数据预处理"></a>1，数据预处理</h1><pre><code>拿到需要处理的数据，首先需要做预处理，这个切记！
+预处理时，需要根据自己的需求--最终展示需要的事项来展开。这里就不赘述了。
+</code></pre><h1 id="2，R语言展示部分"><a href="#2，R语言展示部分" class="headerlink" title="2，Ｒ语言展示部分"></a>2，Ｒ语言展示部分</h1><p>###　先上代码。</p>
+<pre><code>#画图
+library(ggplot2)
+library(plotly)
+#行列处理
+library(dplyr)
+library(tidyr)
+#页面展示
+library(shiny)
+
+#设置工作空间
+setwd(&apos;/home/user/project-dir/data/&apos;)
+#读数据
+#假设数据有城市（cityname）,数据类型（data_type）,数据等级（data_class）,其他字段（这里忽略）等字段
+log_df &lt;- read.table(&apos;data_file&apos;, header = TRUE, sep = &quot;,&quot;, fileEncoding=&quot;utf-8&quot;)
+#两个文件有关联信息，这部分数据包含城市（cityname）,城市类型（citytype）
+config_df &lt;- read.table(&apos;config_file&apos;,header = TRUE, sep = &quot;,&quot;, fileEncoding = &quot;utf-8&quot;)
+
+#按城市、数据类型、等级聚合，统计
+datatype_df &lt;- df_feedback %&gt;%
+  group_by(cityname, data_type, data_class) %&gt;%
+  summarise(plot_dt_cnt = n())
+
+#按城市和数据类型聚合，统计
+datatype_sum_df &lt;- df_feedback %&gt;%
+  group_by(cityname, data_type) %&gt;%
+  summarise(plot_dt_cnt_sum=n())
+
+#聚合上述量表，主要是为了拿到各城市各类型的占比统计所需数据
+datatype_df_together &lt;- dplyr::inner_join(datatype_df, datatype_sum_df, by=c(&quot;cityname&quot;, &quot;data_type&quot;))
+
+#新增占比统计字段
+datatype_df_together &lt;- datatype_df_together %&gt;%
+  mutate(plot_dt_ratio=plot_dt_cnt/plot_dt_cnt_sum)
+
+#按城市和data_class计数
+data_class_df &lt;- df_feedback %&gt;%
+  group_by(cityname, data_class, data_type) %&gt;%
+  summarise(plot_rc_cnt=n())
+
+#界面
+ui &lt;- fluidPage(
+    #大标题
+  titlePanel(&quot;全国问题反馈数据相关分布&quot;),
+  fluidRow(
+    #小标题
+    h4(&quot;各种问题分布&quot;),
+    #选项
+    column(3,selectInput(inputId = &quot;data_type&quot;, label=&quot;请选择需要展示的问题类型&quot;, choices=levels(datatype_df$data_type), multiple = TRUE, selected=&quot;数据类型-1&quot;)),
+    #内容展示
+    column(9, plotlyOutput(outputId=&quot;plot_datatype_output&quot;))
+  ),
+  fluidRow(
+    #小标题
+    h4(&quot;各城市数据等级分布&quot;),
+    #选项
+    column(3,selectInput(inputId = &quot;cityname&quot;, label=&quot;请选择需要展示的城市&quot;, choices=levels(data_class_df$cityname), multiple = TRUE, selected=&quot;北京市&quot;)),
+    #内容展示
+    column(9, plotlyOutput(outputId=&quot;plot_cityname_output&quot;))
+  ),
+  fluidRow(
+    #小标题
+    h4(&quot;各城市数据等级分布&quot;),
+    #选项1
+    column(2,selectInput(inputId = &quot;level&quot;, label=&quot;请选择需要的城市级别&quot;, choices=levels(citylevel_df$level), selected=&quot;S级&quot;)),
+    #选项2
+    column(2,selectInput(inputId = &quot;level_cityname&quot;, label=&quot;请选择需要的城市&quot;, choices=levels(filter(citylevel_df, level==&quot;S级&quot;)[,1]), selected=&quot;北京市&quot;)),
+    #内容展示
+    column(8, plotlyOutput(outputId=&quot;plot_level_cityname_output&quot;))
+  )
+)
+
+s_citylist &lt;- filter(citylevel_df, level==&quot;S级&quot;) [,1]
+#服务
+server &lt;- function( input, output, session) &#123;
+  #按数据类型统计输出S级城市统计结果
+  output$plot_datatype_output &lt;- renderPlotly(&#123;
+    p_datatype &lt;- ggplot(datatype_df_together %&gt;% filter(data_type %in% input$data_type, cityname %in% s_citylist)) +
+      geom_bar(aes(x=as.factor(cityname), weight=plot_dt_ratio, fill=as.factor(data_class)), position=&quot;dodge&quot;) + facet_wrap(~data_type)
+    p_datatype &lt;- p_datatype + xlab(&quot;city&quot;) + ylab(&quot;percent&quot;)
+    ggplotly(p_datatype)
+  &#125;)
+
+  #按城市统计所有的data_class
+  output$plot_cityname_output &lt;- renderPlotly(&#123;
+    p_cityname &lt;- ggplot(data_class_df %&gt;% filter(cityname %in% input$cityname)) +
+      geom_bar(aes(x = as.factor(data_class), weight=plot_rc_cnt, fill= as.factor(data_type)), position = &quot;dodge&quot;) +
+      xlab(&quot;data_class&quot;) + ylab(&quot;CNT&quot;) + facet_wrap(~cityname)
+    ggplotly(p_cityname)
+  &#125;)
+
+  #选项联动
+  choiced_citylist &lt;- reactive(&#123;
+    print(&quot;debug&quot;)
+    citylist &lt;- filter(citylevel_df, level == input$level) %&gt;% mutate(cityname=as.character(cityname)) %&gt;% select(cityname)
+    citylist &lt;- as.vector(citylist)
+    updateSelectInput(session, &quot;level_cityname&quot;, choices = citylist)
+    return (citylist)
+  &#125;)
+
+  #按城市级别选择城市输出统计结果
+  output$plot_level_cityname_output &lt;- renderPlotly(&#123;
+    tmp &lt;- choiced_citylist()
+    p_level_cityname &lt;- ggplot(data_class_df %&gt;% filter(cityname==input$level_cityname)) +
+          geom_bar(aes(x = as.factor(data_class), weight=plot_rc_cnt, fill= as.factor(data_type)), position = &quot;dodge&quot;) +
+          xlab(&quot;data_class&quot;) + ylab(&quot;CNT&quot;) + facet_wrap(~cityname)
+    ggplotly(p_level_cityname)
+  &#125;)
+&#125;
+
+shinyApp(ui=ui, server=server)
+</code></pre><p>附：需要一台部署了shiny server的服务器。</p>
+</div><div class="article-meta" style="max-width:800px"><div class="tags"><i class="icon icon-tag"></i><ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/R%E8%AF%AD%E8%A8%80/" rel="tag">R语言</a><span class="tag-list-count">3</span></li></ul></div><div class="categories"><i class="icon icon-category"></i><ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言</a><span class="category-list-count">5</span></li></ul></div></div><div class="article-comment" style="max-width:800px"><div class="ds-thread" id="ds-thread" data-thread-key="cl4p7eetf000fhvcs6oq657io" data-title="R语言入门-我的HelloWorld" data-url="http://yoursite.com/2016/05/20/R%E8%AF%AD%E8%A8%80%E5%85%A5%E9%97%A8-%E6%88%91%E7%9A%84HelloWorld/" site-name="ueibo"></div><script>var siteName = document.getElementById('ds-thread').getAttribute('site-name');
+var duoshuoQuery = {short_name: siteName};
+(function() {
+  var ds = document.createElement('script');
+  ds.type = 'text/javascript';ds.async = true;
+  ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+  ds.charset = 'UTF-8';
+  (document.getElementsByTagName('head')[0] 
+  || document.getElementsByTagName('body')[0]).appendChild(ds);
+})();</script></div><ul class="navication"><li class="home"><a href="/"><i class="icon icon-home"></i></a></li><li><a href="/2016/07/23/%E8%AE%A4%E8%AF%86ETL/"><i class="icon icon-arror-left"></i></a></li><li><a href="/2016/05/12/%E5%A6%82%E4%BD%95%E9%85%8D%E7%BD%AEfastCGI%E4%BD%BFnginx%E6%94%AF%E6%8C%81CGI/"><i class="icon icon-arror-right"></i></a></li></ul><div class="page-footer"><div class="top"><ul class="social"><li><a href="https://github.com/BoizZ" title="Github" target="_blank"><i class="icon icon-github"></i></a></li><li><a href="https://weibo.com/heqibang" title="Weibo" target="_blank"><i class="icon icon-weibo"></i></a></li><li><a href="https://www.segmentfault.com/u/bon" title="SegmentFault" target="_blank"><i class="icon icon-segmentfault"></i></a></li></ul></div><div class="bottom"><p class="copyright">© 2024 Lester<br><small>POWER BY <a href="https://hexo.io" target="_blank">HEXO</a></small><small>, THEME BY <a href="https://github.com/BoizZ/hexo-theme-laughing" target="_blank">LAUGHING</a></small></p></div></div></div><script>var wrap = document.getElementById('wrap');
+window.onload = function () {
+  wrap.className += ' done';
+}</script></body></html>

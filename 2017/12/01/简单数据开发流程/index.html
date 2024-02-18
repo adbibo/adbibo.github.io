@@ -1,0 +1,103 @@
+<!DOCTYPE html><html lang="zh-cn"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=Edge"><meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"><meta name="format-detection" content="telephone=no"><meta name="format-detection" content="email=no"><meta name="description" content="君子所取者远，则必有所待，所就者大，则必有所忍，志大而量广，才有余而识具足，则必取其远，必就其大！！"><meta name="keywords" content="Hexo, Gruntjs, Nodejs, Reactjs, Vuejs"><title>简单数据开发流程 - Lester</title><link rel="stylesheet" href="/css/main_style.min.css"><link rel="icon" href="/favicon.ico"><meta name="generator" content="Hexo 5.4.2"></head><body><input id="navi" type="checkbox"><ul class="main-navication"><li><a href="/"><span>Home</span></a></li><li><a target="_blank" rel="noopener" href="https://github.com"><span>Github</span></a></li><li><a target="_blank" rel="noopener" href="https://www.v2ex.com/"><span>V2EX</span></a></li></ul><div class="wrapper" id="wrap"><div class="post-header"><label class="navi-button light" for="navi">MENU</label><img class="background" src="http://callfiles.ueibo.com/hexo-theme-laughing/post_background.jpg"><div class="post-title"><h1 class="title">简单数据开发流程</h1><ul class="meta"><li><i class="icon icon-author"></i>Lester</li><li><i class="icon icon-clock"></i>2 Minutes</li><li><i class="icon icon-calendar"></i>December 1, 2017</li></ul></div></div><div class="article-content" style="max-width:800px"><p>最近给组内同事做了一个小分享,先讲下背景.部门属于新组建,主要业务是为各事业部开发一些BI报表.<br>本次分享主要涉及与产品经理的沟通和数据开发过程中的细节, 本人平时开发过程中负责数据开发和后端接口开发.</p>
+<h2 id="1-需求沟通"><a href="#1-需求沟通" class="headerlink" title="1. 需求沟通"></a>1. 需求沟通</h2><h3 id="1-1-产品原型确定"><a href="#1-1-产品原型确定" class="headerlink" title="1.1        产品原型确定"></a>1.1        产品原型确定</h3><ul>
+<li><p>时效,首先确定数据时效</p>
+<pre><code>1,临时需求
+    要求响应时间短
+2,长期需求
+    慢工出细活
+</code></pre></li>
+<li><p>权限</p>
+<pre><code>权限划分,安全问题
+</code></pre></li>
+<li><p>产品原型细节</p>
+</li>
+</ul>
+<h3 id="1-2-数据准备"><a href="#1-2-数据准备" class="headerlink" title="1.2        数据准备"></a>1.2        数据准备</h3><ul>
+<li><p>数据来源</p>
+<p>   存储方式</p>
+<pre><code>excel    文本文件 关系型数据库 nosql 接口
+</code></pre></li>
+<li><p>数据更新方式</p>
+<pre><code>1, 日、周、月、季
+2, 实时
+</code></pre></li>
+</ul>
+<h3 id="1-3-需求分析"><a href="#1-3-需求分析" class="headerlink" title="1.3        需求分析"></a>1.3        需求分析</h3><ul>
+<li>结合需求和实际数据，参照经验，分析，并给出反馈</li>
+</ul>
+<h2 id="2-数据开发"><a href="#2-数据开发" class="headerlink" title="2.    数据开发"></a>2.    数据开发</h2><h3 id="2-1-数据逻辑整理"><a href="#2-1-数据逻辑整理" class="headerlink" title="2.1        数据逻辑整理"></a>2.1        数据逻辑整理</h3><ul>
+<li><p>数据更新方式</p>
+<p>   1, 日、周、月、季<br>   2, 实时</p>
+</li>
+<li><p>数据维度整理</p>
+<p>   1, 维度标准化</p>
+<pre><code>产品经理给出映射表
+自己设计
+</code></pre><p>   2, 结合实际数据，考虑要比产品经理更长远</p>
+</li>
+</ul>
+<h3 id="2-2-数据开发"><a href="#2-2-数据开发" class="headerlink" title="2.2        数据开发"></a>2.2        数据开发</h3><ul>
+<li><p>数据库配置</p>
+<p>   测试库<br>   预发布库<br>   正式库</p>
+</li>
+<li><p>数据库设计</p>
+<p>   数据库表<br>   索引</p>
+</li>
+<li><p>数据维度</p>
+<p>   结合实际数据，考虑要比产品经理更长远</p>
+</li>
+<li><p>数据更新方式</p>
+<p>   日、周、月、季</p>
+</li>
+<li><p>部署</p>
+<p>   环境<br>   权限</p>
+<pre><code>数据库权限
+</code></pre></li>
+</ul>
+<h3 id="2-3-数据展示后台"><a href="#2-3-数据展示后台" class="headerlink" title="2.3    数据展示后台"></a>2.3    数据展示后台</h3><ul>
+<li><p>域名</p>
+<p>   测试域名<br>   预发布域名<br>   正式域名</p>
+</li>
+<li><p>接口</p>
+<p>   参数设计</p>
+<pre><code>依据产品原型设计
+默认参数
+</code></pre><p>   接口内容格式</p>
+<pre><code>与前端配合，给出最适合前端处理的格式
+</code></pre><p>   接口文档</p>
+<pre><code>每个字都要让前端看的懂
+</code></pre></li>
+<li><p>权限</p>
+<p>   权限分级<br>   权限不分级<br>部署方式</p>
+<pre><code>环境
+</code></pre></li>
+</ul>
+<h2 id="3-结果验证"><a href="#3-结果验证" class="headerlink" title="3    结果验证"></a>3    结果验证</h2><ul>
+<li><p>数据验证</p>
+<p>   1.维度验证</p>
+<pre><code>结果是否涵盖了数据实际全维度
+实际数据没有覆盖到的维度，是否设置了默认值
+</code></pre><ol start="2">
+<li>数据结果指标验证<br> 此处需要产品经理或数据分析人员配合</li>
+</ol>
+</li>
+<li><p>后台验证</p>
+<p>   接口验证<br>   权限验证<br>   上线验证</p>
+</li>
+<li><p>结果交付</p>
+</li>
+</ul>
+<p>以上是本次分享的所有大纲,具体的细节应依据开发过程中遇到的实际问题而定.</p>
+</div><div class="article-meta" style="max-width:800px"><div class="tags"><i class="icon icon-tag"></i><ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E6%8D%AE%E5%BC%80%E5%8F%91/" rel="tag">数据开发</a><span class="tag-list-count">3</span></li></ul></div><div class="categories"><i class="icon icon-category"></i><ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%95%B0%E6%8D%AE%E5%BC%80%E5%8F%91/">数据开发</a><span class="category-list-count">3</span></li></ul></div></div><div class="article-comment" style="max-width:800px"><div class="ds-thread" id="ds-thread" data-thread-key="cl4p7eetj0015hvcs4fh49uot" data-title="简单数据开发流程" data-url="http://yoursite.com/2017/12/01/%E7%AE%80%E5%8D%95%E6%95%B0%E6%8D%AE%E5%BC%80%E5%8F%91%E6%B5%81%E7%A8%8B/" site-name="ueibo"></div><script>var siteName = document.getElementById('ds-thread').getAttribute('site-name');
+var duoshuoQuery = {short_name: siteName};
+(function() {
+  var ds = document.createElement('script');
+  ds.type = 'text/javascript';ds.async = true;
+  ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+  ds.charset = 'UTF-8';
+  (document.getElementsByTagName('head')[0] 
+  || document.getElementsByTagName('body')[0]).appendChild(ds);
+})();</script></div><ul class="navication"><li class="home"><a href="/"><i class="icon icon-home"></i></a></li><li><a href="/2017/12/12/%E7%A8%8B%E5%BA%8F%E5%91%98%E4%B9%8B%E8%B7%AF-shell%E7%AF%87/"><i class="icon icon-arror-left"></i></a></li><li><a href="/2017/10/09/Django%E9%A1%B9%E7%9B%AE%E5%8D%95%E6%9C%BA%E9%83%A8%E7%BD%B2/"><i class="icon icon-arror-right"></i></a></li></ul><div class="page-footer"><div class="top"><ul class="social"><li><a href="https://github.com/BoizZ" title="Github" target="_blank"><i class="icon icon-github"></i></a></li><li><a href="https://weibo.com/heqibang" title="Weibo" target="_blank"><i class="icon icon-weibo"></i></a></li><li><a href="https://www.segmentfault.com/u/bon" title="SegmentFault" target="_blank"><i class="icon icon-segmentfault"></i></a></li></ul></div><div class="bottom"><p class="copyright">© 2024 Lester<br><small>POWER BY <a href="https://hexo.io" target="_blank">HEXO</a></small><small>, THEME BY <a href="https://github.com/BoizZ/hexo-theme-laughing" target="_blank">LAUGHING</a></small></p></div></div></div><script>var wrap = document.getElementById('wrap');
+window.onload = function () {
+  wrap.className += ' done';
+}</script></body></html>

@@ -1,0 +1,84 @@
+<!DOCTYPE html><html lang="zh-cn"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=Edge"><meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"><meta name="format-detection" content="telephone=no"><meta name="format-detection" content="email=no"><meta name="description" content="君子所取者远，则必有所待，所就者大，则必有所忍，志大而量广，才有余而识具足，则必取其远，必就其大！！"><meta name="keywords" content="Hexo, Gruntjs, Nodejs, Reactjs, Vuejs"><title>使用Cloudera快速部署Hadoop集群(二) - Lester</title><link rel="stylesheet" href="/css/main_style.min.css"><link rel="icon" href="/favicon.ico"><meta name="generator" content="Hexo 5.4.2"></head><body><input id="navi" type="checkbox"><ul class="main-navication"><li><a href="/"><span>Home</span></a></li><li><a target="_blank" rel="noopener" href="https://github.com"><span>Github</span></a></li><li><a target="_blank" rel="noopener" href="https://www.v2ex.com/"><span>V2EX</span></a></li></ul><div class="wrapper" id="wrap"><div class="post-header"><label class="navi-button light" for="navi">MENU</label><img class="background" src="http://callfiles.ueibo.com/hexo-theme-laughing/post_background.jpg"><div class="post-title"><h1 class="title">使用Cloudera快速部署Hadoop集群(二)</h1><ul class="meta"><li><i class="icon icon-author"></i>Lester</li><li><i class="icon icon-clock"></i>3 Minutes</li><li><i class="icon icon-calendar"></i>September 7, 2016</li></ul></div></div><div class="article-content" style="max-width:800px"><h3 id="一-Cloudera-Manager-安装后的各个目录"><a href="#一-Cloudera-Manager-安装后的各个目录" class="headerlink" title="一,Cloudera Manager 安装后的各个目录"></a>一,Cloudera Manager 安装后的各个目录</h3><ul>
+<li>/var/log/cloudera-scm-installer : 安装日志目录。</li>
+<li>/var/log/* : 相关日志文件（相关服务的及CM的）。</li>
+<li>/usr/share/cmf/ : 程序安装目录。</li>
+<li>/usr/lib64/cmf/ : Agent程序代码。</li>
+<li>/var/lib/cloudera-scm-server-db/data: 内嵌数据库目录。</li>
+<li>/usr/bin/postgres : 内嵌数据库程序。</li>
+<li>/etc/cloudera-scm-agent/ : agent的配置目录。</li>
+<li>/etc/cloudera-scm-server/ : server的配置目录。</li>
+<li>/opt/cloudera/parcels/ : Hadoop相关服务安装目录。</li>
+<li>/opt/cloudera/parcel-repo/ : 下载的服务软件包数据，数据格式为parcels。</li>
+<li>/opt/cloudera/parcel-cache/ : 下载的服务软件包缓存数据。</li>
+<li>/etc/hadoop/* : 客户端配置文件目录。</li>
+</ul>
+<h3 id="二-各节点服务详述"><a href="#二-各节点服务详述" class="headerlink" title="二,各节点服务详述"></a>二,各节点服务详述</h3><p>利用Cloudera Manager安装CDH，需要配置各节点角色，现将各服务节点角色一一说明。</p>
+<h4 id="1-HDFS"><a href="#1-HDFS" class="headerlink" title="1,HDFS"></a>1,HDFS</h4><p><a href="hadoop.apache.org">Apache hadoop官网</a>描述如下：</p>
+<pre><code>Hadoop Distributed File System (HDFS™): A distributed file system that provides high-throughput access to application data.
+</code></pre><ul>
+<li>Gateway</li>
+<li>HttpFS</li>
+<li>NameNode</li>
+<li>DataNode</li>
+<li>SecondaryNameNode</li>
+<li>Balancer</li>
+<li>HttpFS</li>
+<li>NFS Gateway</li>
+</ul>
+<h4 id="2-HBase"><a href="#2-HBase" class="headerlink" title="2,HBase"></a>2,HBase</h4><ul>
+<li>Gateway</li>
+<li>Master</li>
+<li>HBase REST Server</li>
+<li>HBase Thrift Server</li>
+<li>Region Server</li>
+</ul>
+<h4 id="3-YRAN"><a href="#3-YRAN" class="headerlink" title="3,YRAN"></a>3,YRAN</h4><ul>
+<li>Resource  Manager</li>
+<li>JobHistory Server</li>
+<li>NodeManager</li>
+</ul>
+<h4 id="4-Spark"><a href="#4-Spark" class="headerlink" title="4,Spark"></a>4,Spark</h4><ul>
+<li>History Server</li>
+<li>Gateway</li>
+<li>Livy Server</li>
+</ul>
+<h4 id="5-ZooKeeper"><a href="#5-ZooKeeper" class="headerlink" title="5,ZooKeeper"></a>5,ZooKeeper</h4><ul>
+<li>server</li>
+</ul>
+<h4 id="6-Hive"><a href="#6-Hive" class="headerlink" title="6,Hive"></a>6,Hive</h4><ul>
+<li>Gateway</li>
+<li>Hive Metastore Server</li>
+<li>WebHcat</li>
+<li>HiveServer2</li>
+</ul>
+<h4 id="7-HUE"><a href="#7-HUE" class="headerlink" title="7,HUE"></a>7,HUE</h4><ul>
+<li>Hue Server</li>
+</ul>
+<h4 id="8-Impala"><a href="#8-Impala" class="headerlink" title="8,Impala"></a>8,Impala</h4><ul>
+<li>Impala Catalog Server</li>
+<li>Impala Llama ApplicationMaster</li>
+<li>Impala Daemon</li>
+</ul>
+<h4 id="9-Oozie"><a href="#9-Oozie" class="headerlink" title="9,Oozie"></a>9,Oozie</h4><ul>
+<li>Oozie Server</li>
+</ul>
+<h4 id="10-Solr"><a href="#10-Solr" class="headerlink" title="10,Solr"></a>10,Solr</h4><ul>
+<li>Gateway</li>
+<li>Solr Server</li>
+</ul>
+<h4 id="11-Key-Value-Store-Indexer"><a href="#11-Key-Value-Store-Indexer" class="headerlink" title="11,Key-Value Store Indexer"></a>11,Key-Value Store Indexer</h4><ul>
+<li>Lily HBase Indexer</li>
+</ul>
+</div><div class="article-meta" style="max-width:800px"><div class="tags"><i class="icon icon-tag"></i><ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/CDH/" rel="tag">CDH</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B9%B3%E5%8F%B0%E5%BC%80%E5%8F%91/" rel="tag">平台开发</a><span class="tag-list-count">2</span></li></ul></div><div class="categories"><i class="icon icon-category"></i><ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%B9%B3%E5%8F%B0%E5%BC%80%E5%8F%91/">平台开发</a><span class="category-list-count">2</span></li></ul></div></div><div class="article-comment" style="max-width:800px"><div class="ds-thread" id="ds-thread" data-thread-key="cl4p7eetg000lhvcs7uljatq6" data-title="使用Cloudera快速部署Hadoop集群(二)" data-url="http://yoursite.com/2016/09/07/%E4%BD%BF%E7%94%A8Cloudera%E5%BF%AB%E9%80%9F%E9%83%A8%E7%BD%B2Hadoop%E9%9B%86%E7%BE%A4-%E4%BA%8C/" site-name="ueibo"></div><script>var siteName = document.getElementById('ds-thread').getAttribute('site-name');
+var duoshuoQuery = {short_name: siteName};
+(function() {
+  var ds = document.createElement('script');
+  ds.type = 'text/javascript';ds.async = true;
+  ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+  ds.charset = 'UTF-8';
+  (document.getElementsByTagName('head')[0] 
+  || document.getElementsByTagName('body')[0]).appendChild(ds);
+})();</script></div><ul class="navication"><li class="home"><a href="/"><i class="icon icon-home"></i></a></li><li><a href="/2016/11/11/GIT%E4%BD%BF%E7%94%A8%E5%AE%9E%E6%88%98/"><i class="icon icon-arror-left"></i></a></li><li><a href="/2016/08/29/%E4%BD%BF%E7%94%A8Cloudera%E5%BF%AB%E9%80%9F%E9%83%A8%E7%BD%B2Hadoop%E9%9B%86%E7%BE%A4-%E4%B8%80/"><i class="icon icon-arror-right"></i></a></li></ul><div class="page-footer"><div class="top"><ul class="social"><li><a href="https://github.com/BoizZ" title="Github" target="_blank"><i class="icon icon-github"></i></a></li><li><a href="https://weibo.com/heqibang" title="Weibo" target="_blank"><i class="icon icon-weibo"></i></a></li><li><a href="https://www.segmentfault.com/u/bon" title="SegmentFault" target="_blank"><i class="icon icon-segmentfault"></i></a></li></ul></div><div class="bottom"><p class="copyright">© 2024 Lester<br><small>POWER BY <a href="https://hexo.io" target="_blank">HEXO</a></small><small>, THEME BY <a href="https://github.com/BoizZ/hexo-theme-laughing" target="_blank">LAUGHING</a></small></p></div></div></div><script>var wrap = document.getElementById('wrap');
+window.onload = function () {
+  wrap.className += ' done';
+}</script></body></html>

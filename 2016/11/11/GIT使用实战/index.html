@@ -1,0 +1,103 @@
+<!DOCTYPE html><html lang="zh-cn"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=Edge"><meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"><meta name="format-detection" content="telephone=no"><meta name="format-detection" content="email=no"><meta name="description" content="君子所取者远，则必有所待，所就者大，则必有所忍，志大而量广，才有余而识具足，则必取其远，必就其大！！"><meta name="keywords" content="Hexo, Gruntjs, Nodejs, Reactjs, Vuejs"><title>GIT使用实战 - Lester</title><link rel="stylesheet" href="/css/main_style.min.css"><link rel="icon" href="/favicon.ico"><meta name="generator" content="Hexo 5.4.2"></head><body><input id="navi" type="checkbox"><ul class="main-navication"><li><a href="/"><span>Home</span></a></li><li><a target="_blank" rel="noopener" href="https://github.com"><span>Github</span></a></li><li><a target="_blank" rel="noopener" href="https://www.v2ex.com/"><span>V2EX</span></a></li></ul><div class="wrapper" id="wrap"><div class="post-header"><label class="navi-button light" for="navi">MENU</label><img class="background" src="http://callfiles.ueibo.com/hexo-theme-laughing/post_background.jpg"><div class="post-title"><h1 class="title">GIT使用实战</h1><ul class="meta"><li><i class="icon icon-author"></i>Lester</li><li><i class="icon icon-clock"></i>5 Minutes</li><li><i class="icon icon-calendar"></i>November 11, 2016</li></ul></div></div><div class="article-content" style="max-width:800px"><h2 id="参考教程"><a href="#参考教程" class="headerlink" title="参考教程"></a>参考教程</h2><p>推荐廖雪峰的<a target="_blank" rel="noopener" href="http://www.liaoxuefeng.com/wiki/0013739516305929606dd18361248578c67b8067c8c017b000">Git教程</a></p>
+<p>省去账号申请等信息，以我自己使用过程遇到的问题和解决的方式来给大家讲讲。</p>
+<h2 id="问题一：实际coding时，我有github平台和gitlab平台的需求，如何在本机配置？"><a href="#问题一：实际coding时，我有github平台和gitlab平台的需求，如何在本机配置？" class="headerlink" title="问题一：实际coding时，我有github平台和gitlab平台的需求，如何在本机配置？"></a>问题一：实际coding时，我有github平台和gitlab平台的需求，如何在本机配置？</h2><p>一般.ssh都在用户目录下，</p>
+<pre><code># adbibo @ bogon in ~/.ssh [15:04:49]
+$ pwd
+/Users/adbibo/.ssh
+</code></pre><p>生成一个新的ssh key</p>
+<pre><code>$ ssh-keygen -t rsa -b 4096 -C &quot;your_email@example.com&quot;
+Generating public/private rsa key pair.
+Enter file in which to save the key (/Users/adbibo/.ssh/id_rsa):/Users/adbibo/.ssh/test_id_rsa
+#在此输入你要保存ssh key的实际文件名，为了区分github和gitlab，请将ssh key存储在不同的文件中。
+Enter passphrase (empty for no passphrase): 输入密码，鄙人比较懒，直接回车跳过
+Enter same passphrase again:同上
+Your identification has been saved in /Users/adbibo/.ssh/test_id_rsa.
+Your public key has been saved in /Users/adbibo/.ssh/test_id_rsa.pub.
+The key fingerprint is:
+SHA256:xRAuPVjXDjJUKihSqQWb9TwBMH3Be4ChaMxm8C+3j24 your_email@example.com
+The key&apos;s randomart image is:
++---[RSA 4096]----+
+|=+=*o. .=oo.     |
+|=O=o+o =o=. .    |
+|*Oo.=o+ =ooo     |
+|=. o...o o  .    |
+|  . o.  S        |
+|   o .           |
+|    .            |
+|    Eo           |
+|   oo .          |
++----[SHA256]-----+
+</code></pre><p>生成的ssh key分别将验证信息和公钥存储在test_id_rsa和test_id_rsa.pub文件中。</p>
+<p>在.ssh目录下创建文件config</p>
+<pre><code>$ cd ~/.ssh
+$ touch config
+</code></pre><p>添加如下内容：</p>
+<pre><code># gitlab
+Host gitlab.com
+    HostName gitlab.com
+    IdentityFile ~/.ssh/gitlab_rsa
+# github
+Host github.com
+    HostName github.com
+    IdentityFile ~/.ssh/github_rsa
+</code></pre><p>至此，gitlab和github的项目通过git命令管理了。</p>
+<h2 id="问题二：如果将本地的工程提交到远程仓库？"><a href="#问题二：如果将本地的工程提交到远程仓库？" class="headerlink" title="问题二：如果将本地的工程提交到远程仓库？"></a>问题二：如果将本地的工程提交到远程仓库？</h2><p>这里以github为例， 首先在<a href="github.com">github.com</a>上创建工程，点击”New repository”，输入Repository name，填写Description，选择项目是public还是private，然后点击”Create repository”。得到一个如下形式的git仓库名。</p>
+<pre><code>git@github.com:yourgithubname/test.git
+</code></pre><p>然后回到本机，在工程目录下执行如下命令：</p>
+<pre><code>git init  # 在本地初始化git仓库
+git add . # 添加当前目录下的所有文件作为需要版本管理的文件
+git commit -m &quot;第一次提交&quot;  # 填写提交信息
+git remote add origin git@github.com:yourgithubname/test.git  # 关联远程仓库
+git push -u origin master  # 将本地文件提交到远程仓库
+</code></pre><p>一般都会顺利地进行至此，但是我在<a href="github.com">github.com</a>上创建工程时，选择了生成.gitignore文件，于是远程仓库初始化时就有了文件。再在本机进行上面的操作就会报错了。</p>
+<pre><code>To github.com:yourgithubname/test.git
+ ! [rejected]        master -&gt; master (fetch first)
+error: failed to push some refs to &apos;git@github.com:yourgithubname/test.git&apos;
+hint: Updates were rejected because the remote contains work that you do
+hint: not have locally. This is usually caused by another repository pushing
+hint: to the same ref. You may want to first integrate the remote changes
+hint: (e.g., &apos;git pull ...&apos;) before pushing again.
+hint: See the &apos;Note about fast-forwards&apos; in &apos;git push --help&apos; for details.
+</code></pre><p>提示需要先git pull，就是先要将远程仓库的文件pull到本机，但是由于本机使用IDE自动生成了.gitignore文件，与远程仓库发生了冲突。需要带上参数–allow-unrelated-histories</p>
+<pre><code>$ git pull origin master --allow-unrelated-histories
+From github.com:yourgithubname/test
+ * branch            master     -&gt; FETCH_HEAD
+Auto-merging README.md
+CONFLICT (add/add): Merge conflict in README.md
+Auto-merging .gitignore
+CONFLICT (add/add): Merge conflict in .gitignore
+Automatic merge failed; fix conflicts and then commit the result.
+</code></pre><p>此时又提示merge conflict， 所以需要手动做更改.gitignore和README.md文件，具体根据需求进行更改。然后重新执行如下命令：</p>
+<pre><code>$git add .
+$git commit -m &apos;commot message&apos;
+$ git push
+显示如下信息就说明commit成功了。
+Counting objects: 17, done.
+Delta compression using up to 4 threads.
+Compressing objects: 100% (15/15), done.
+Writing objects: 100% (17/17), 4.15 KiB | 0 bytes/s, done.
+Total 17 (delta 2), reused 0 (delta 0)
+</code></pre><h2 id="问题三：遇到再补充。"><a href="#问题三：遇到再补充。" class="headerlink" title="问题三：遇到再补充。"></a>问题三：遇到再补充。</h2><h2 id="常用git仓库"><a href="#常用git仓库" class="headerlink" title="常用git仓库"></a>常用git仓库</h2><ol>
+<li><p><a href="github.com">github.com</a></p>
+<p> 开源项目很多，可以管理个人创建的项目，public的项目免费，如果创建private的需要money。可以搭个人blog，我用的hexo，简单配置即可。</p>
+</li>
+<li><p><a href="gitlab.com">gitlab.com</a></p>
+<p> 也不错，private项目免费，看中的就这点，毕竟github用的很习惯。</p>
+</li>
+</ol>
+<blockquote>
+<p> 对于不喜欢命令行的朋友，推荐使用sourceTree这个工具来管理， 附上链接<a target="_blank" rel="noopener" href="https://www.sourcetreeapp.com/">sourceTree</a></p>
+</blockquote>
+</div><div class="article-meta" style="max-width:800px"><div class="tags"><i class="icon icon-tag"></i><ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/GIT/" rel="tag">GIT</a><span class="tag-list-count">1</span></li></ul></div><div class="categories"><i class="icon icon-category"></i><ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/GIT/">GIT</a><span class="category-list-count">1</span></li></ul></div></div><div class="article-comment" style="max-width:800px"><div class="ds-thread" id="ds-thread" data-thread-key="cl4p7eetd0009hvcs648t7d6f" data-title="GIT使用实战" data-url="http://yoursite.com/2016/11/11/GIT%E4%BD%BF%E7%94%A8%E5%AE%9E%E6%88%98/" site-name="ueibo"></div><script>var siteName = document.getElementById('ds-thread').getAttribute('site-name');
+var duoshuoQuery = {short_name: siteName};
+(function() {
+  var ds = document.createElement('script');
+  ds.type = 'text/javascript';ds.async = true;
+  ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+  ds.charset = 'UTF-8';
+  (document.getElementsByTagName('head')[0] 
+  || document.getElementsByTagName('body')[0]).appendChild(ds);
+})();</script></div><ul class="navication"><li class="home"><a href="/"><i class="icon icon-home"></i></a></li><li><a href="/2016/12/06/mysql%E6%95%B0%E6%8D%AE%E5%BA%93%E6%9D%83%E9%99%90%E6%93%8D%E4%BD%9C/"><i class="icon icon-arror-left"></i></a></li><li><a href="/2016/09/07/%E4%BD%BF%E7%94%A8Cloudera%E5%BF%AB%E9%80%9F%E9%83%A8%E7%BD%B2Hadoop%E9%9B%86%E7%BE%A4-%E4%BA%8C/"><i class="icon icon-arror-right"></i></a></li></ul><div class="page-footer"><div class="top"><ul class="social"><li><a href="https://github.com/BoizZ" title="Github" target="_blank"><i class="icon icon-github"></i></a></li><li><a href="https://weibo.com/heqibang" title="Weibo" target="_blank"><i class="icon icon-weibo"></i></a></li><li><a href="https://www.segmentfault.com/u/bon" title="SegmentFault" target="_blank"><i class="icon icon-segmentfault"></i></a></li></ul></div><div class="bottom"><p class="copyright">© 2024 Lester<br><small>POWER BY <a href="https://hexo.io" target="_blank">HEXO</a></small><small>, THEME BY <a href="https://github.com/BoizZ/hexo-theme-laughing" target="_blank">LAUGHING</a></small></p></div></div></div><script>var wrap = document.getElementById('wrap');
+window.onload = function () {
+  wrap.className += ' done';
+}</script></body></html>

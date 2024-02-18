@@ -1,0 +1,193 @@
+<!DOCTYPE html><html lang="zh-cn"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=Edge"><meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"><meta name="format-detection" content="telephone=no"><meta name="format-detection" content="email=no"><meta name="description" content="君子所取者远，则必有所待，所就者大，则必有所忍，志大而量广，才有余而识具足，则必取其远，必就其大！！"><meta name="keywords" content="Hexo, Gruntjs, Nodejs, Reactjs, Vuejs"><title>大厂是怎样做数据治理的? - Lester</title><link rel="stylesheet" href="/css/main_style.min.css"><link rel="icon" href="/favicon.ico"><meta name="generator" content="Hexo 5.4.2"></head><body><input id="navi" type="checkbox"><ul class="main-navication"><li><a href="/"><span>Home</span></a></li><li><a target="_blank" rel="noopener" href="https://github.com"><span>Github</span></a></li><li><a target="_blank" rel="noopener" href="https://www.v2ex.com/"><span>V2EX</span></a></li></ul><div class="wrapper" id="wrap"><div class="post-header"><label class="navi-button light" for="navi">MENU</label><img class="background" src="http://callfiles.ueibo.com/hexo-theme-laughing/post_background.jpg"><div class="post-title"><h1 class="title">大厂是怎样做数据治理的?</h1><ul class="meta"><li><i class="icon icon-author"></i>Lester</li><li><i class="icon icon-clock"></i>6 Minutes</li><li><i class="icon icon-calendar"></i>June 21, 2023</li></ul></div></div><div class="article-content" style="max-width:800px"><p>数据治理，这几年很火的一个话题，为什么要做数据治理？这可能是很多数据治理项目负责人需要给他的老板回答的问题。</p>
+<p>“因为在数据产生、采集、加工、存储、应用到销毁的全过程中，每个环节都可能会引入各种质量、效率或安全相关的问题。在公司早期的发展阶段，这些数据问题对公司发展的影响并不是很大，公司对问题的容忍度相对也比较高。但是，随着业务的发展，公司在利用数据资产创造价值的同时，对数据质量和稳定性要求也有所提升。此外，当数据积累得越来越多，公司对数据精细化运营程度的要求也随之提高，会逐渐发现有很多问题需要治理。”</p>
+<p>最近阅读了几篇大厂做数据治理的一些文章, 其中有国内大厂美团酒旅事业部,有网易严选, 也有国外大厂Uber做数据治理的一些经验。</p>
+<h1 id="美团酒旅"><a href="#美团酒旅" class="headerlink" title="美团酒旅"></a>美团酒旅</h1><h2 id="需要治理哪些问题"><a href="#需要治理哪些问题" class="headerlink" title="需要治理哪些问题?"></a><strong>需要治理哪些问题</strong>?</h2><p>数据治理是一项需要长期被关注的复杂工程，这项工程通过建立一个满足企业需求的数据决策体系，在数据资产管理过程中行使权力、管控和决策等活动，并涉及到组织、流程、管理制度和技术体系等多个方面。一般而言，数据治理的治理内容主要包括下面几个部分：</p>
+<ul>
+<li><strong>质量问题</strong>：这是最重要的问题，很多公司的数据部门启动数据治理的大背景就是数据质量存在问题，比如数仓的及时性、准确性、规范性，以及数据应用指标的逻辑一致性问题等。</li>
+<li><strong>成本问题</strong>：互联网行业数据膨胀速度非常快，大型互联网公司在大数据基础设施上的成本投入占比非常高，而且随着数据量的增加，成本也将继续攀升。</li>
+<li><strong>效率问题</strong>：在数据开发和数据管理过程中都会遇到一些影响效率的问题，很多时候是靠“盲目”地堆人力在做。</li>
+<li><strong>安全问题</strong>：业务部门特别关注用户数据，一旦泄露，对业务的影响非常之大，甚至能左右整个业务的生死。</li>
+<li><strong>标准问题</strong>：当公司业务部门比较多的时候，各业务部门、开发团队的数据标准不一致，数据打通和整合过程中都会出现很多问题。</li>
+</ul>
+<h2 id="关键行动"><a href="#关键行动" class="headerlink" title="关键行动"></a>关键行动</h2><ol>
+<li><p>数据治理策略 </p>
+<ul>
+<li><p>确定数据治理的内容: 组织、标准规范、技术、衡量指标</p>
+</li>
+<li><p>整体数据治理的实现路径是以<strong>标准化的规范和组织保障为前提</strong>，通过做<strong>技术体系</strong>整体保证数据治理策略的实现。同时，搭建数据治理的<strong>衡量体系</strong>，随时观测和监控数据治理的效果，保障数据治理长期向好的方向发展。</p>
+</li>
+</ul>
+</li>
+<li><p>标准化和组织保障</p>
+<ul>
+<li>制定全链路标准, 从数据采集、数仓开发、指标管理到数据生命周期管理</li>
+<li>联合组建业务部门的数据管理委员会-组织保障</li>
+</ul>
+</li>
+<li><p>技术系统</p>
+<ul>
+<li>核心是系统替代人工</li>
+<li>数据质量保障<ul>
+<li>统一数仓规范建模 OneModel – <strong>工具保障-数仓规范化开发系统-Dataman</strong></li>
+<li>统一指标逻辑管理 OneLogic</li>
+<li>统一数据服务OneService</li>
+<li>统一用户产品入口 OnePortal – 将数据门户按照使用用户和应用场景划分为3类, 决策分析/业务数据查询/数据资产信息查询</li>
+</ul>
+</li>
+<li>提升数据运营效率<ul>
+<li>RD人工答疑–&gt;答疑机器人</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>衡量指标</p>
+</li>
+</ol>
+<h1 id="网易严选"><a href="#网易严选" class="headerlink" title="网易严选"></a>网易严选</h1><h2 id="需要治理哪些问题-1"><a href="#需要治理哪些问题-1" class="headerlink" title="需要治理哪些问题?"></a>需要治理哪些问题?</h2><ul>
+<li><p>模型</p>
+<p>希望在模型设计开发方面有更多的规范、制度、知识沉淀。</p>
+</li>
+<li><p>任务运维</p>
+<p>希望任务能及时、准确、稳定产出，同时出现问题可以快速定位问题、影响评估和辅助解决问题。</p>
+</li>
+<li><p>报警优化</p>
+<p>减少晚上值班由于任务出错或异常报警次数，并有一些干预措施。</p>
+</li>
+<li><p>链路感知</p>
+<p>任务血缘（任务之间的依赖）复杂，希望有一些链路感知能力（某一任务变更对上下游任务有提示及流程管控能力），此链路感知目前用于减少资损事件发生场景。</p>
+</li>
+<li><p>测试卡点</p>
+<p>在建设之前严选数仓还没有相应的测试环境，也没有测试辅助功能来协助数据开发进行测试，希望有测试环境及相关辅助测试功能，同时QA同学可以对核心或重点任务进行测试卡点及审核，从而提升任务和数据的质量。</p>
+</li>
+<li><p>重大事故快速恢复</p>
+<p>严选一些核心任务或源头数据出现问题后，在项目建设之前恢复可能需要1~2天左右时间，严重影响了数据的正常使用，希望可以从技术层面来协助快速解决，从而提升用户体验。</p>
+</li>
+</ul>
+<p>在后续还是有很多事情要做的，如下：</p>
+<ul>
+<li>关键链路诊断：目前是单链路或输入任务，后续可以考虑多链路排序展示，开发人员来选择多条链路分析。</li>
+<li>多基线任务问题联合定位：多条基线任务智能定位，发现单任务引起的多基线多报警问题，做智能取消处理。</li>
+<li>影响分析进阶：指标层面影响分析，多任务影响联合分析。</li>
+<li>报警配置优化：值班组报警配置向基线报警配置优化、报警接收方式、报警类型、报警次数拆分等。</li>
+<li>数据质量评估体系：重点推进模型（复用、健壮、规范）、任务、指标等质量评估指标体系的建设。</li>
+</ul>
+<h2 id="关键行为"><a href="#关键行为" class="headerlink" title="关键行为"></a>关键行为</h2><ol>
+<li>事前—模型上线前第一道防线<ul>
+<li>流程保障<ul>
+<li>需求  需求管理,背景/指标口径/价值/deadline</li>
+<li>研发  需求评审/模型设计/测试</li>
+<li>生产  数据质量稽核配置和任务运维</li>
+</ul>
+</li>
+<li>模型设计保障<ul>
+<li>dwd 面向业务过程设计, 不需要需求输入</li>
+<li>dws 面向需求设计</li>
+<li>dm 面向需求设计</li>
+<li>维度提炼</li>
+</ul>
+</li>
+<li>数据质量保障<ul>
+<li>完整性/唯一性/有效性/一致性/精确性</li>
+</ul>
+</li>
+<li>测试保障<ul>
+<li>测试中心– 测试环境</li>
+<li>核心功能: <ul>
+<li>数据对比: 分区, 字段, 从模型和字段两个粒度给出相关一致性统计指标, 可查看不一致明细信息</li>
+<li>形态探查: 对模型的构成信息进行探查, 数量/字段长度/空值占比/最大最小值/枚举值</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>链路感知保障<ul>
+<li>末级模型打标</li>
+<li>根据模型血缘对上游模型整体打标签</li>
+<li>上有模型对应任务变更提交时会有相应提示活流程管控</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>事中—基于基线任务运维<ul>
+<li>任务运维中心  及时发现问题&gt;快速定位问题&gt;全面影响评估&gt;辅助解决问题</li>
+<li>通过不同基线对任务机型划分, 从而可以针对不同基线任务采取不同的策略动作</li>
+<li>基线划分原则<ul>
+<li>基线只针对天调度任务</li>
+<li>核心应用</li>
+<li>核心指标</li>
+<li>预留破线buffer</li>
+</ul>
+</li>
+<li>统一基线<ul>
+<li>2:30基线  dwd</li>
+<li>4:30基线 dws</li>
+<li>7:30基线 核心产品应用</li>
+<li>9:30基线 数仓全部主题域、指标、应用模型产出</li>
+<li>数仓默认基线： 不重要的任务可以挂在默认基线上，若出现集群资源紧张情况，则可以对此基线任务进行查杀</li>
+</ul>
+</li>
+<li>报警过多措施<ul>
+<li>电话报警智能取消  真多单任务有多个报警，如已电话报警，则20分钟内报警取消</li>
+<li>报警时间间隔调整  会减少报警次数， 但也增加了破线未提前干预风险</li>
+<li>重复报警整合  </li>
+</ul>
+</li>
+<li>关键链路诊断</li>
+</ul>
+</li>
+<li>事后—报警干预措施及常态化机制<ul>
+<li>制定干预措施<ul>
+<li>问题处理知识库</li>
+<li>关键链路诊断&amp;影响分析</li>
+</ul>
+</li>
+<li>重大事故快速恢复</li>
+<li>常态化事项<ul>
+<li>冷任务定级</li>
+<li>耗时任务优化</li>
+<li>引擎切换或升级</li>
+<li>任务长链路优化</li>
+<li>维表设计优化</li>
+<li>任务报警兜底优化</li>
+</ul>
+</li>
+<li>监控复盘</li>
+</ul>
+</li>
+</ol>
+<h1 id="Uber"><a href="#Uber" class="headerlink" title="Uber"></a>Uber</h1><h2 id="需要治理哪些问题-2"><a href="#需要治理哪些问题-2" class="headerlink" title="需要治理哪些问题?"></a>需要治理哪些问题?</h2><p>对于一些重要的数据问题，我们没有给予足够的关注，在规模扩大之后，它们变得更加重要，涉及的具体问题包括：</p>
+<ul>
+<li><strong><em>数据重复：</em></strong> 一些关键数据和指标缺少一个真实的数据来源，这导致了重复、不一致，并且在使用时会有很多困惑。消费者必须从解决业务问题中抽出时间来做大量的尽职调查，从而弥补这一点。使用自助服务工具创建的数十万个数据集加剧了这个问题，因为我们无法明显看出哪个数据集更重要。</li>
+<li><strong><em>发现问题：</em></strong> 如果没有丰富的元数据和分面搜索，在数十万数据集中发现数据是很困难的。糟糕的发现导致了重复的数据集、重复的工作和不一致的答案（这取决于回答问题时所使用的数据）。</li>
+<li><strong><em>工具互不连通：</em></strong> 数据流经许多工具、系统和组织。但是我们的工具没有相互集成，导致工作重复和糟糕的开发体验——例如，必须在多个工具之间复制粘贴文档和所有者信息；开发者无法自信地修改数据模式，因为不清楚它在下游是如何使用的。</li>
+<li><strong><em>日志不一致：</em></strong> 在移动设备上的日志是手动完成的；日志没有统一的结构，我们无法通过简单、一致的方法度量用户的实际行为，只能通过推断来判定（这低效且容易出错）。</li>
+<li><strong><em>流程缺失：</em></strong> 缺乏跨团队的数据工程流程，导致各个团队的成熟度不同，团队间没有一致的数据质量定义或指标。</li>
+<li><strong><em>所有权和 SLA 缺失：</em></strong> 数据集没有明确的属主——它们通常没有质量保证、错误修复的 SLA 不一致，电话支持、事件管理与我们对服务的管理方式相去甚远。</li>
+</ul>
+<h2 id="关键行动-1"><a href="#关键行动-1" class="headerlink" title="关键行动"></a>关键行动</h2><ol>
+<li>数据即代码 Data As Code, 模型的复用及扩展要优于创建新模型</li>
+<li>数据要有Owner, 每份数据都必须有一个明确的owner和明确的使用场景, 并且在用完后废弃掉</li>
+<li>数据质量要已知, data quality is known, </li>
+<li>加速数据生产效率, 数据产品要</li>
+</ol>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><ol>
+<li>事前, 制定合理的规范,明确健全的流程</li>
+<li>事中, 优化要到位, 任务优化, 链路优化</li>
+<li>事后, 总结复盘, 知识库</li>
+</ol>
+<p><strong>Reference</strong></p>
+<p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/pMhpp-VHWAPuG2qgWZp63A">美团酒旅数据治理实践</a></p>
+<p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/xkuqAQd7N7j7Blj2Y4xQ4g">网易严选数仓任务治理实践</a></p>
+<p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/m0jM3UWad0WIZ-JtoL5ZpQ">数据赋能：Uber的数据治理实践分享</a></p>
+</div><div class="article-meta" style="max-width:800px"><div class="tags"><i class="icon icon-tag"></i><ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E6%8D%AE%E6%B2%BB%E7%90%86/" rel="tag">数据治理</a><span class="tag-list-count">1</span></li></ul></div><div class="categories"><i class="icon icon-category"></i><ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%95%B0%E6%8D%AE%E6%B2%BB%E7%90%86/">数据治理</a><span class="category-list-count">1</span></li></ul></div></div><div class="article-comment" style="max-width:800px"><div class="ds-thread" id="ds-thread" data-thread-key="cl4p7eeth000shvcs8oe16z7q" data-title="大厂是怎样做数据治理的?" data-url="http://yoursite.com/2023/06/21/%E5%A4%A7%E5%8E%82%E6%98%AF%E6%80%8E%E6%A0%B7%E5%81%9A%E6%95%B0%E6%8D%AE%E6%B2%BB%E7%90%86%E7%9A%84/" site-name="ueibo"></div><script>var siteName = document.getElementById('ds-thread').getAttribute('site-name');
+var duoshuoQuery = {short_name: siteName};
+(function() {
+  var ds = document.createElement('script');
+  ds.type = 'text/javascript';ds.async = true;
+  ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+  ds.charset = 'UTF-8';
+  (document.getElementsByTagName('head')[0] 
+  || document.getElementsByTagName('body')[0]).appendChild(ds);
+})();</script></div><ul class="navication"><li class="home"><a href="/"><i class="icon icon-home"></i></a></li><li><a href="/2022/04/23/%E6%89%8B%E6%8A%8A%E6%89%8B%E6%95%99%E4%BD%A0%E5%A6%82%E4%BD%95%E6%90%AD%E5%BB%BA%E5%8D%95%E6%9C%BAspark-iceberg%E7%8E%AF%E5%A2%83/"><i class="icon icon-arror-right"></i></a></li></ul><div class="page-footer"><div class="top"><ul class="social"><li><a href="https://github.com/BoizZ" title="Github" target="_blank"><i class="icon icon-github"></i></a></li><li><a href="https://weibo.com/heqibang" title="Weibo" target="_blank"><i class="icon icon-weibo"></i></a></li><li><a href="https://www.segmentfault.com/u/bon" title="SegmentFault" target="_blank"><i class="icon icon-segmentfault"></i></a></li></ul></div><div class="bottom"><p class="copyright">© 2024 Lester<br><small>POWER BY <a href="https://hexo.io" target="_blank">HEXO</a></small><small>, THEME BY <a href="https://github.com/BoizZ/hexo-theme-laughing" target="_blank">LAUGHING</a></small></p></div></div></div><script>var wrap = document.getElementById('wrap');
+window.onload = function () {
+  wrap.className += ' done';
+}</script></body></html>

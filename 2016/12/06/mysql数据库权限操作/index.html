@@ -1,0 +1,221 @@
+<!DOCTYPE html><html lang="zh-cn"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=Edge"><meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"><meta name="format-detection" content="telephone=no"><meta name="format-detection" content="email=no"><meta name="description" content="君子所取者远，则必有所待，所就者大，则必有所忍，志大而量广，才有余而识具足，则必取其远，必就其大！！"><meta name="keywords" content="Hexo, Gruntjs, Nodejs, Reactjs, Vuejs"><title>mysql数据库权限操作 - Lester</title><link rel="stylesheet" href="/css/main_style.min.css"><link rel="icon" href="/favicon.ico"><meta name="generator" content="Hexo 5.4.2"></head><body><input id="navi" type="checkbox"><ul class="main-navication"><li><a href="/"><span>Home</span></a></li><li><a target="_blank" rel="noopener" href="https://github.com"><span>Github</span></a></li><li><a target="_blank" rel="noopener" href="https://www.v2ex.com/"><span>V2EX</span></a></li></ul><div class="wrapper" id="wrap"><div class="post-header"><label class="navi-button light" for="navi">MENU</label><img class="background" src="http://callfiles.ueibo.com/hexo-theme-laughing/post_background.jpg"><div class="post-title"><h1 class="title">mysql数据库权限操作</h1><ul class="meta"><li><i class="icon icon-author"></i>Lester</li><li><i class="icon icon-clock"></i>4 Minutes</li><li><i class="icon icon-calendar"></i>December 6, 2016</li></ul></div></div><div class="article-content" style="max-width:800px"><h1 id="设置用户权限"><a href="#设置用户权限" class="headerlink" title="设置用户权限"></a>设置用户权限</h1><p>以root账号登录mysql</p>
+<pre><code>mysql -hlocalhost -uroot -p
+mysql&gt; use mysql;
+</code></pre><h2 id="创建用户"><a href="#创建用户" class="headerlink" title="创建用户"></a>创建用户</h2><pre><code>create user mike identified by &apos;mike&apos;;
+create user rainbow@localhost identified by &apos;rainbow&apos;;
+</code></pre><h2 id="修改用户名"><a href="#修改用户名" class="headerlink" title="修改用户名"></a>修改用户名</h2><pre><code>rename user mike to john;
+</code></pre><h2 id="删除用户"><a href="#删除用户" class="headerlink" title="删除用户"></a>删除用户</h2><pre><code>drop user rainbow;
+</code></pre><h2 id="查看用户"><a href="#查看用户" class="headerlink" title="查看用户"></a>查看用户</h2><pre><code>select host,user from user;
+</code></pre><h2 id="更改密码"><a href="#更改密码" class="headerlink" title="更改密码"></a>更改密码</h2><pre><code>update mysql.user set authentication_string=password(&apos;123qwe&apos;) where user=&apos;john&apos;;
+alter user &apos;john&apos;@&apos;localhost&apos; identified by &apos;123qwe&apos;;
+</code></pre><h2 id="给用户添加权限"><a href="#给用户添加权限" class="headerlink" title="给用户添加权限"></a>给用户添加权限</h2><p>常规权限：</p>
+<pre><code>select，查
+update，改
+delete，删
+insert，增
+</code></pre><p>数据库开发人员权限：</p>
+<pre><code>create,  建表
+alter,   修改
+drop,    删除
+references,    操作外键权限
+create tempoary tables,  操作临时表权限
+index,  操作索引权限
+create view,  操作试图权限
+show view,  查看试图源代码权限
+create routine,  操作存储过程权限
+alter routine,
+execute,  操作mysq函数权限
+</code></pre><p>DBA权限：</p>
+<pre><code>grant all on *.* to dba@&apos;localhost&apos;  #高级DBA管理MySQL中所有数据库权限
+</code></pre><p>设置权限时必须给出一下信息</p>
+<ul>
+<li>要授予的权限</li>
+<li>被授予访问权限的数据库或表</li>
+<li>用户名</li>
+</ul>
+<p>grant和revoke可以在几个层次上控制访问权限</p>
+<ol>
+<li>整个服务器，使用 grant ALL  和revoke  ALL</li>
+<li>整个数据库，使用on  database.*</li>
+<li>特点表，使用on  database.table</li>
+<li>特定的列</li>
+<li>特定的存储过程</li>
+</ol>
+<p>user表中host列的值的意义</p>
+<table>
+<thead>
+<tr>
+<th>%</th>
+<th>匹配所有主机</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>localhost</td>
+<td>localhost不会被解析成IP地址，直接通过UNIXsocket连接</td>
+</tr>
+<tr>
+<td>127.0.0.1</td>
+<td>会通过TCP/IP协议连接，并且只能在本机访问</td>
+</tr>
+<tr>
+<td>::1</td>
+<td>::1就是兼容支持ipv6的，表示同ipv4的127.0.0.1</td>
+</tr>
+</tbody>
+</table>
+<p>1.为用户adbibo添加数据库test中所有表的查询权限</p>
+<pre><code>grant select on test.* to &apos;adbibo&apos;@&apos;localhost&apos; identified by &apos;adbibo&apos;;
+</code></pre><p>2.为用户adbibo添加数据库test中所有表的增删改权限</p>
+<pre><code>grant update,delete,insert on test.* to &apos;adbibo&apos;@&apos;localhost&apos; identified by &apos;adbibo&apos;;
+</code></pre><p>3.为用户adbibo添加数据库中所有的权限，最高权限</p>
+<pre><code>grant all privileges on *.* to &apos;adbibo&apos;@&apos;localhost&apos; identified by &apos;adbibo&apos;;
+</code></pre><p>4.删除用户adbibo插入数据库的权限</p>
+<pre><code>revoke insert on *.*  from &apos;adbibo&apos;@&apos;localhost&apos;;
+</code></pre><h1 id="附：-权限表"><a href="#附：-权限表" class="headerlink" title="附： 权限表"></a>附： 权限表</h1><table>
+<thead>
+<tr>
+<th>权限</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>all</td>
+<td></td>
+</tr>
+<tr>
+<td>alter</td>
+<td>修改表</td>
+</tr>
+<tr>
+<td>create</td>
+<td>创建表</td>
+</tr>
+<tr>
+<td>drop</td>
+<td>删除表</td>
+</tr>
+<tr>
+<td>index</td>
+<td>可以使用create index 和drop index</td>
+</tr>
+<tr>
+<td>create view</td>
+<td>创建试图</td>
+</tr>
+<tr>
+<td>show view</td>
+<td>显示视图内容</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>select</td>
+<td>查询表</td>
+</tr>
+<tr>
+<td>update</td>
+<td>更新表内容</td>
+</tr>
+<tr>
+<td>delete</td>
+<td>删除表内容</td>
+</tr>
+<tr>
+<td>insert</td>
+<td>向表中插入记录</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>grant option</td>
+<td>可以使用grant</td>
+</tr>
+<tr>
+<td>create user</td>
+<td>创建用户</td>
+</tr>
+<tr>
+<td>show databases</td>
+<td>显示当前用户可访问的所有数据库名</td>
+</tr>
+<tr>
+<td>alter routine</td>
+<td>使用alter procedure 和drop procedure</td>
+</tr>
+<tr>
+<td>create routine</td>
+<td>使用create  procedure</td>
+</tr>
+<tr>
+<td>create temporary tables</td>
+<td>使用create temporary table</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>execute</td>
+<td>使用call和存储过程</td>
+</tr>
+<tr>
+<td>file</td>
+<td>使用select into outfile  和load data infile和revoke</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>lock tables</td>
+<td>锁表</td>
+</tr>
+<tr>
+<td>process</td>
+<td>使用show full processlist</td>
+</tr>
+<tr>
+<td>reload</td>
+<td>使用flush</td>
+</tr>
+<tr>
+<td>replication client</td>
+<td>服务器位置访问</td>
+</tr>
+<tr>
+<td>replocation slave</td>
+<td>由复制从属使用</td>
+</tr>
+<tr>
+<td>shutdown</td>
+<td>使用mysqladmin shutdown 来关闭mysql</td>
+</tr>
+<tr>
+<td>super</td>
+<td></td>
+</tr>
+<tr>
+<td>usage</td>
+<td>无访问权限</td>
+</tr>
+</tbody>
+</table>
+</div><div class="article-meta" style="max-width:800px"><div class="tags"><i class="icon icon-tag"></i><ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a><span class="tag-list-count">2</span></li></ul></div><div class="categories"><i class="icon icon-category"></i><ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a><span class="category-list-count">2</span></li></ul></div></div><div class="article-comment" style="max-width:800px"><div class="ds-thread" id="ds-thread" data-thread-key="cl4p7eetf000ehvcs76ngb64d" data-title="mysql数据库权限操作" data-url="http://yoursite.com/2016/12/06/mysql%E6%95%B0%E6%8D%AE%E5%BA%93%E6%9D%83%E9%99%90%E6%93%8D%E4%BD%9C/" site-name="ueibo"></div><script>var siteName = document.getElementById('ds-thread').getAttribute('site-name');
+var duoshuoQuery = {short_name: siteName};
+(function() {
+  var ds = document.createElement('script');
+  ds.type = 'text/javascript';ds.async = true;
+  ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+  ds.charset = 'UTF-8';
+  (document.getElementsByTagName('head')[0] 
+  || document.getElementsByTagName('body')[0]).appendChild(ds);
+})();</script></div><ul class="navication"><li class="home"><a href="/"><i class="icon icon-home"></i></a></li><li><a href="/2017/09/08/%E6%95%B0%E6%8D%AE%E5%BC%80%E5%8F%91%E8%A7%84%E8%8C%83-%E8%A1%A5%E5%85%85%E4%B8%AD/"><i class="icon icon-arror-left"></i></a></li><li><a href="/2016/11/11/GIT%E4%BD%BF%E7%94%A8%E5%AE%9E%E6%88%98/"><i class="icon icon-arror-right"></i></a></li></ul><div class="page-footer"><div class="top"><ul class="social"><li><a href="https://github.com/BoizZ" title="Github" target="_blank"><i class="icon icon-github"></i></a></li><li><a href="https://weibo.com/heqibang" title="Weibo" target="_blank"><i class="icon icon-weibo"></i></a></li><li><a href="https://www.segmentfault.com/u/bon" title="SegmentFault" target="_blank"><i class="icon icon-segmentfault"></i></a></li></ul></div><div class="bottom"><p class="copyright">© 2024 Lester<br><small>POWER BY <a href="https://hexo.io" target="_blank">HEXO</a></small><small>, THEME BY <a href="https://github.com/BoizZ/hexo-theme-laughing" target="_blank">LAUGHING</a></small></p></div></div></div><script>var wrap = document.getElementById('wrap');
+window.onload = function () {
+  wrap.className += ' done';
+}</script></body></html>

@@ -1,0 +1,92 @@
+<!DOCTYPE html><html lang="zh-cn"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=Edge"><meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"><meta name="format-detection" content="telephone=no"><meta name="format-detection" content="email=no"><meta name="description" content="君子所取者远，则必有所待，所就者大，则必有所忍，志大而量广，才有余而识具足，则必取其远，必就其大！！"><meta name="keywords" content="Hexo, Gruntjs, Nodejs, Reactjs, Vuejs"><title>认识ETL - Lester</title><link rel="stylesheet" href="/css/main_style.min.css"><link rel="icon" href="/favicon.ico"><meta name="generator" content="Hexo 5.4.2"></head><body><input id="navi" type="checkbox"><ul class="main-navication"><li><a href="/"><span>Home</span></a></li><li><a target="_blank" rel="noopener" href="https://github.com"><span>Github</span></a></li><li><a target="_blank" rel="noopener" href="https://www.v2ex.com/"><span>V2EX</span></a></li></ul><div class="wrapper" id="wrap"><div class="post-header"><label class="navi-button light" for="navi">MENU</label><img class="background" src="http://callfiles.ueibo.com/hexo-theme-laughing/post_background.jpg"><div class="post-title"><h1 class="title">认识ETL</h1><ul class="meta"><li><i class="icon icon-author"></i>Lester</li><li><i class="icon icon-clock"></i>4 Minutes</li><li><i class="icon icon-calendar"></i>July 23, 2016</li></ul></div></div><div class="article-content" style="max-width:800px"><blockquote>
+<p>最近两年一直从事数据处理相关的工作，一年前开始接触数据挖掘的工作，第一个项目就是将两个不同数据源的数据导入项目组odps应用。从数据存放的角度，我的工作分为三部分：1，数据下载（数据存放在不同的服务器）；2，数据清洗格式统一（需要与内部的其它数据保持一致的格式）；3，数据同步至odps（开篇提到的数据需要导入至odps应用中）。其中，主要工作在第二步。当时没有ETL的概念，直到最近新入职一家公司的数据部门，花了不到一周的时间重构了一套ETL流程，才意识到自己一直在从事自己并不认为是ETL开发的工作。于是决定趁今天晚上的时间，利用网络上已有的知识系统地学习ETL。</p>
+</blockquote>
+<h3 id="什么是ETL？"><a href="#什么是ETL？" class="headerlink" title="什么是ETL？"></a>什么是ETL？</h3><p><a target="_blank" rel="noopener" href="http://baike.baidu.com/subview/69207/14676359.htm">ETL－百度百科</a></p>
+<blockquote>
+<p>ETL，是英文 Extract-Transform-Load 的缩写，用来描述将数据从来源端经过抽取（extract）、转换（transform）、加载（load）至目的端的过程。ETL一词较常用在数据仓库，但其对象并不限于数据仓库。ETL是构建数据仓库的重要一环，用户从数据源抽取出所需的数据，经过数据清洗,最终按照预先定义好的数据仓库模型，将数据加载到数据仓库中去。</p>
+</blockquote>
+<p>以下内容转自<a target="_blank" rel="noopener" href="http://blog.sina.com.cn/s/blog_565fb6240100eyht.html">MichaelLau的博客</a></p>
+<h3 id="E－extract"><a href="#E－extract" class="headerlink" title="E－extract"></a>E－extract</h3><h4 id="需要解决的问题包括："><a href="#需要解决的问题包括：" class="headerlink" title="需要解决的问题包括："></a>需要解决的问题包括：</h4><ul>
+<li>a、数据的时间差异性问题<blockquote>
+<p>在抽取旧有数据时，要将不同时期的数据定义统一，较早的数据不够完整或不符合新系统的数据规范，一般可以根据规则，在存入中转区的过程中予以更新或补充。
+　　</p>
+</blockquote>
+</li>
+<li><p>b、数据的平台多样性问题</p>
+<blockquote>
+<p>　在抽取旧有数据时，大部分数据都可采用表复制方式直接导入数据中转区集中，再做处理，但有部分数据可能需要转换成文本文件或使用第三方工具如 Informatica等装载入数据中转区。这部分数据主要是与数据中转区数据库平台不一致的数据库数据，或非存储于数据库内的文本、excel等数据。</p>
+</blockquote>
+</li>
+<li><p>c 、数据的不稳定性问题</p>
+<blockquote>
+<p>对于重要信息的完整历史变更记录，在抽取时可以根据各时期的历史信息，在抽取需要信息等基本属性的旧有数据时，要与相应时段的信息关联得到真实的历史属性。</p>
+</blockquote>
+</li>
+<li><p>d 、数据的依赖性问题</p>
+<blockquote>
+<p>旧有业务系统的数据关联一般已有约束保证，代码表和参照表等数据也比较准确，但仍有少量数据不完整，对这部分数据，需根据地税的需求采取清洗策略，保证数据仓库各事实表和维表之间的关联完整有效。<br>　　数据仓库各事实表和维表的初始装载顺序有先后关系，要有一个集中的数据装载任务顺序方案，确保初始数据装载的准确。这可以通过操作系统或第三方工具的任务调度机制来保证。</p>
+</blockquote>
+</li>
+</ul>
+<h3 id="T-transform"><a href="#T-transform" class="headerlink" title="T-transform"></a>T-transform</h3><h4 id="需要注意的问题"><a href="#需要注意的问题" class="headerlink" title="需要注意的问题"></a>需要注意的问题</h4><blockquote>
+<p>数据清洗主要是针对源数据库中出现二义性、重 复、不完整、违反业务或逻辑规则等问题的数据数据进行统一的处理，一般包括如：NULL值处理，日期格式转换，数据类型转换等等。在清洗之前需要进行数据 质量分析，以找出存在问题的数据，否则数据清洗将无从谈起。数据装载是通过装载工具或自行编写的SQL程序将抽取、转换后的结果数据加载到目标数据库中。</p>
+</blockquote>
+<h5 id="数据质量问题具体表现在以下几个方面："><a href="#数据质量问题具体表现在以下几个方面：" class="headerlink" title="数据质量问题具体表现在以下几个方面："></a>数据质量问题具体表现在以下几个方面：</h5><ul>
+<li>a、正确性（Accuracy）：数据是否正确的表示了现实或可证实的来源?</li>
+<li>b、完整性（Integrity）：数据之间的参照完整性是否存在或一致?</li>
+<li>c、一致性（Consistency）：数据是否被一致的定义或理解?</li>
+<li>d、完备性（Completeness）：所有需要的数据都存在吗?</li>
+<li>e、有效性（Validity）：数据是否在企业定义的可接受的范围之内?</li>
+<li>f、时效性（Timeliness）：数据在需要的时侯是有效的吗?</li>
+<li>g、可获取性（Accessibility）：数据是否易于获取、易于理解和易于使用?</li>
+</ul>
+<h5 id="以下综合说明数据仓库中数据质量要求，包括格式、完整性要求。"><a href="#以下综合说明数据仓库中数据质量要求，包括格式、完整性要求。" class="headerlink" title="以下综合说明数据仓库中数据质量要求，包括格式、完整性要求。"></a>以下综合说明数据仓库中数据质量要求，包括格式、完整性要求。</h5><ul>
+<li>a、业务描述统一，对数据模型的不同版本融合、映射为唯一版本。包括：<ul>
+<li>1、在业务逻辑没有变化的前提下，旧的业务数据映射在新模型上。</li>
+<li>2、 遗留系统的人事信息、考核相关信息与业务系统、行政其他模块要一致。</li>
+</ul>
+</li>
+<li>b、信息描述规范、完整。<ul>
+<li>1、不存在格式违规,数据类型不存在潜在错误。</li>
+<li>2 、参照完整性未被破坏,数据不会找不到参照。</li>
+<li>3 、不存在交叉系统匹配违规，数据被很好集成,相同的数据存在于多个系统中，数据之间要匹配。</li>
+<li>4 、数据在内部一致,同样的纪录字段在同一个表中重复出现，不能有差别。</li>
+</ul>
+</li>
+</ul>
+<h3 id="L-loading"><a href="#L-loading" class="headerlink" title="L-loading"></a>L-loading</h3><blockquote>
+<p>将转换和清洗完的数据按照数据仓库的结构进行数据加载。需要考虑初始数据装载、数据刷新、加载顺序等等问题。</p>
+</blockquote>
+<h5 id="a、针对数据现状，初始导入有这样一些问题需要考虑："><a href="#a、针对数据现状，初始导入有这样一些问题需要考虑：" class="headerlink" title="a、针对数据现状，初始导入有这样一些问题需要考虑："></a>a、针对数据现状，初始导入有这样一些问题需要考虑：</h5><ul>
+<li>1、如何解决时间差异性？</li>
+<li>2、如何解决平台差异性？</li>
+<li>3、如何适应数据的不稳定性？</li>
+<li>4、如何解决数据依赖性？</li>
+</ul>
+<h5 id="b、数据刷新的策略要根据业务需求和应用系统的承受能力和数据情况决定。主要有这样一些问题需要考虑："><a href="#b、数据刷新的策略要根据业务需求和应用系统的承受能力和数据情况决定。主要有这样一些问题需要考虑：" class="headerlink" title="b、数据刷新的策略要根据业务需求和应用系统的承受能力和数据情况决定。主要有这样一些问题需要考虑："></a>b、数据刷新的策略要根据业务需求和应用系统的承受能力和数据情况决定。主要有这样一些问题需要考虑：</h5><ul>
+<li>1、如何解决时间差异性？</li>
+<li>2、如何适应数据的不稳定性？</li>
+<li>3、如何解决平台差异性？</li>
+<li>4、如何解决数据依赖性？</li>
+<li>5、如何减少对业务系统的影响？</li>
+</ul>
+<h5 id="c、不同的刷新任务类型，对业务系统的影响不同，刷新任务有以下种归类特性："><a href="#c、不同的刷新任务类型，对业务系统的影响不同，刷新任务有以下种归类特性：" class="headerlink" title="c、不同的刷新任务类型，对业务系统的影响不同，刷新任务有以下种归类特性："></a>c、不同的刷新任务类型，对业务系统的影响不同，刷新任务有以下种归类特性：</h5><ul>
+<li>1、刷新频率：实时刷新、每数小时、每日、每周、每月、不定期手动刷新。</li>
+<li>2、刷新方式：数据库表复制、文本文件ftp再装载、物化视图、数据库trigger。</li>
+<li>3、数据加工方式：简单插入更新、增加计算项字段、多表关联更新、汇总、多表关联汇总计算。</li>
+</ul>
+<p>　　并可针对各种异常情况做处理：回滚，重新装载，断点重新装载等等，还可在任务完成后（或失败后）将日志以Email方式发给数据仓库管理人员。</p>
+<p>以上内容属于搬运，后续在项目中学习到的知识，再来进行补充。</p>
+</div><div class="article-meta" style="max-width:800px"><div class="tags"><i class="icon icon-tag"></i><ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/ETL/" rel="tag">ETL</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E6%8D%AE%E5%BC%80%E5%8F%91/" rel="tag">数据开发</a><span class="tag-list-count">3</span></li></ul></div><div class="categories"><i class="icon icon-category"></i><ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%95%B0%E6%8D%AE%E5%BC%80%E5%8F%91/">数据开发</a><span class="category-list-count">3</span></li></ul></div></div><div class="article-comment" style="max-width:800px"><div class="ds-thread" id="ds-thread" data-thread-key="cl4p7eetj0018hvcs1q2k4my1" data-title="认识ETL" data-url="http://yoursite.com/2016/07/23/%E8%AE%A4%E8%AF%86ETL/" site-name="ueibo"></div><script>var siteName = document.getElementById('ds-thread').getAttribute('site-name');
+var duoshuoQuery = {short_name: siteName};
+(function() {
+  var ds = document.createElement('script');
+  ds.type = 'text/javascript';ds.async = true;
+  ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+  ds.charset = 'UTF-8';
+  (document.getElementsByTagName('head')[0] 
+  || document.getElementsByTagName('body')[0]).appendChild(ds);
+})();</script></div><ul class="navication"><li class="home"><a href="/"><i class="icon icon-home"></i></a></li><li><a href="/2016/08/29/%E4%BD%BF%E7%94%A8Cloudera%E5%BF%AB%E9%80%9F%E9%83%A8%E7%BD%B2Hadoop%E9%9B%86%E7%BE%A4-%E4%B8%80/"><i class="icon icon-arror-left"></i></a></li><li><a href="/2016/05/20/R%E8%AF%AD%E8%A8%80%E5%85%A5%E9%97%A8-%E6%88%91%E7%9A%84HelloWorld/"><i class="icon icon-arror-right"></i></a></li></ul><div class="page-footer"><div class="top"><ul class="social"><li><a href="https://github.com/BoizZ" title="Github" target="_blank"><i class="icon icon-github"></i></a></li><li><a href="https://weibo.com/heqibang" title="Weibo" target="_blank"><i class="icon icon-weibo"></i></a></li><li><a href="https://www.segmentfault.com/u/bon" title="SegmentFault" target="_blank"><i class="icon icon-segmentfault"></i></a></li></ul></div><div class="bottom"><p class="copyright">© 2024 Lester<br><small>POWER BY <a href="https://hexo.io" target="_blank">HEXO</a></small><small>, THEME BY <a href="https://github.com/BoizZ/hexo-theme-laughing" target="_blank">LAUGHING</a></small></p></div></div></div><script>var wrap = document.getElementById('wrap');
+window.onload = function () {
+  wrap.className += ' done';
+}</script></body></html>

@@ -1,0 +1,34 @@
+<!DOCTYPE html><html lang="zh-cn"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=Edge"><meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"><meta name="format-detection" content="telephone=no"><meta name="format-detection" content="email=no"><meta name="description" content="君子所取者远，则必有所待，所就者大，则必有所忍，志大而量广，才有余而识具足，则必取其远，必就其大！！"><meta name="keywords" content="Hexo, Gruntjs, Nodejs, Reactjs, Vuejs"><title>使用Cloudera快速部署Hadoop集群(一) - Lester</title><link rel="stylesheet" href="/css/main_style.min.css"><link rel="icon" href="/favicon.ico"><meta name="generator" content="Hexo 5.4.2"></head><body><input id="navi" type="checkbox"><ul class="main-navication"><li><a href="/"><span>Home</span></a></li><li><a target="_blank" rel="noopener" href="https://github.com"><span>Github</span></a></li><li><a target="_blank" rel="noopener" href="https://www.v2ex.com/"><span>V2EX</span></a></li></ul><div class="wrapper" id="wrap"><div class="post-header"><label class="navi-button light" for="navi">MENU</label><img class="background" src="http://callfiles.ueibo.com/hexo-theme-laughing/post_background.jpg"><div class="post-title"><h1 class="title">使用Cloudera快速部署Hadoop集群(一)</h1><ul class="meta"><li><i class="icon icon-author"></i>Lester</li><li><i class="icon icon-clock"></i>2 Minutes</li><li><i class="icon icon-calendar"></i>August 29, 2016</li></ul></div></div><div class="article-content" style="max-width:800px"><blockquote>
+<p> 换到新公司已经一个半月，做了两个小项目，现在在进行第三个大项目。由于部门是新成立的，需要搭建数据中心的基础数据平台，我先试个水。</p>
+</blockquote>
+<blockquote>
+<p>之前的工作经历导致对Hadoop生态了解的不多，因为原来公司的数据都在阿里云上。不需要了解细节就可以很好地工作，而那时的我也比较懵逼，所以。。。</p>
+</blockquote>
+<blockquote>
+<p>好久没有更新blog，准备接下来每周都讲讲自己平台搭建的工作。所有文中提到的参考链接均为查阅资料时的参考。</p>
+</blockquote>
+<h1 id="Cloudera-Manager安装"><a href="#Cloudera-Manager安装" class="headerlink" title="Cloudera Manager安装"></a>Cloudera Manager安装</h1><h3 id="1，Cloudera-Manager"><a href="#1，Cloudera-Manager" class="headerlink" title="1，Cloudera Manager"></a>1，Cloudera Manager</h3><pre><code>安装包：
+    http://archive.cloudera.com/cm5/redhat/6/x86_64/cm/5/RPMS/x86_64/
+</code></pre><h3 id="2，Cloudera-Manager资源"><a href="#2，Cloudera-Manager资源" class="headerlink" title="2，Cloudera Manager资源"></a>2，Cloudera Manager资源</h3><pre><code>http://archive.cloudera.com/cm5/cm/5/
+</code></pre><h3 id="3，parcels"><a href="#3，parcels" class="headerlink" title="3，parcels"></a>3，parcels</h3><pre><code>http://archive.cloudera.com/cdh5/parcels/5.8/
+</code></pre><h3 id="4，tarball"><a href="#4，tarball" class="headerlink" title="4，tarball"></a>4，tarball</h3><pre><code>http://archive.cloudera.com/cdh5/repo-as-tarball/5.8.0/
+</code></pre><h2 id="CDH服务配置"><a href="#CDH服务配置" class="headerlink" title="CDH服务配置"></a>CDH服务配置</h2><h3 id="1，解析Cloudera-Manager内部结构、功能包括配置文件、目录位置等"><a href="#1，解析Cloudera-Manager内部结构、功能包括配置文件、目录位置等" class="headerlink" title="1，解析Cloudera Manager内部结构、功能包括配置文件、目录位置等"></a>1，解析Cloudera Manager内部结构、功能包括配置文件、目录位置等</h3><pre><code>http://my.oschina.net/cloudcoder/blog/362374
+</code></pre><h3 id="2，YARN-MRv2-Resource-Manager深入剖析—RM总体架构"><a href="#2，YARN-MRv2-Resource-Manager深入剖析—RM总体架构" class="headerlink" title="2，YARN/MRv2 Resource Manager深入剖析—RM总体架构"></a>2，YARN/MRv2 Resource Manager深入剖析—RM总体架构</h3><pre><code>http://dongxicheng.org/mapreduce-nextgen/yarnmrv2-resource-manager-infrastructure/
+</code></pre><h3 id="3，HDFS详解"><a href="#3，HDFS详解" class="headerlink" title="3，HDFS详解"></a>3，HDFS详解</h3><pre><code>http://my.oschina.net/crxy/blog/348868
+http://blog.chinaunix.net/uid-27105712-id-3274395.html
+</code></pre><h3 id="4，HUE"><a href="#4，HUE" class="headerlink" title="4，HUE"></a>4，HUE</h3><pre><code>http://ju.outofmemory.cn/entry/105162
+</code></pre><h3 id="5，Hive详细教程"><a href="#5，Hive详细教程" class="headerlink" title="5，Hive详细教程"></a>5，Hive详细教程</h3><pre><code>http://my.oschina.net/yangzhiyuan/blog/228362
+</code></pre><h3 id="6，HBase"><a href="#6，HBase" class="headerlink" title="6，HBase"></a>6，HBase</h3><pre><code>http://www.cnblogs.com/JemBai/archive/2012/07/21/2602432.html
+</code></pre></div><div class="article-meta" style="max-width:800px"><div class="tags"><i class="icon icon-tag"></i><ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/CDH/" rel="tag">CDH</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B9%B3%E5%8F%B0%E5%BC%80%E5%8F%91/" rel="tag">平台开发</a><span class="tag-list-count">2</span></li></ul></div><div class="categories"><i class="icon icon-category"></i><ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%B9%B3%E5%8F%B0%E5%BC%80%E5%8F%91/">平台开发</a><span class="category-list-count">2</span></li></ul></div></div><div class="article-comment" style="max-width:800px"><div class="ds-thread" id="ds-thread" data-thread-key="cl4p7eetg000jhvcsa0hgfroq" data-title="使用Cloudera快速部署Hadoop集群(一)" data-url="http://yoursite.com/2016/08/29/%E4%BD%BF%E7%94%A8Cloudera%E5%BF%AB%E9%80%9F%E9%83%A8%E7%BD%B2Hadoop%E9%9B%86%E7%BE%A4-%E4%B8%80/" site-name="ueibo"></div><script>var siteName = document.getElementById('ds-thread').getAttribute('site-name');
+var duoshuoQuery = {short_name: siteName};
+(function() {
+  var ds = document.createElement('script');
+  ds.type = 'text/javascript';ds.async = true;
+  ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+  ds.charset = 'UTF-8';
+  (document.getElementsByTagName('head')[0] 
+  || document.getElementsByTagName('body')[0]).appendChild(ds);
+})();</script></div><ul class="navication"><li class="home"><a href="/"><i class="icon icon-home"></i></a></li><li><a href="/2016/09/07/%E4%BD%BF%E7%94%A8Cloudera%E5%BF%AB%E9%80%9F%E9%83%A8%E7%BD%B2Hadoop%E9%9B%86%E7%BE%A4-%E4%BA%8C/"><i class="icon icon-arror-left"></i></a></li><li><a href="/2016/07/23/%E8%AE%A4%E8%AF%86ETL/"><i class="icon icon-arror-right"></i></a></li></ul><div class="page-footer"><div class="top"><ul class="social"><li><a href="https://github.com/BoizZ" title="Github" target="_blank"><i class="icon icon-github"></i></a></li><li><a href="https://weibo.com/heqibang" title="Weibo" target="_blank"><i class="icon icon-weibo"></i></a></li><li><a href="https://www.segmentfault.com/u/bon" title="SegmentFault" target="_blank"><i class="icon icon-segmentfault"></i></a></li></ul></div><div class="bottom"><p class="copyright">© 2024 Lester<br><small>POWER BY <a href="https://hexo.io" target="_blank">HEXO</a></small><small>, THEME BY <a href="https://github.com/BoizZ/hexo-theme-laughing" target="_blank">LAUGHING</a></small></p></div></div></div><script>var wrap = document.getElementById('wrap');
+window.onload = function () {
+  wrap.className += ' done';
+}</script></body></html>

@@ -1,0 +1,56 @@
+<!DOCTYPE html><html lang="zh-cn"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=Edge"><meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"><meta name="format-detection" content="telephone=no"><meta name="format-detection" content="email=no"><meta name="description" content="君子所取者远，则必有所待，所就者大，则必有所忍，志大而量广，才有余而识具足，则必取其远，必就其大！！"><meta name="keywords" content="Hexo, Gruntjs, Nodejs, Reactjs, Vuejs"><title>MySQL数据库优化 - Lester</title><link rel="stylesheet" href="/css/main_style.min.css"><link rel="icon" href="/favicon.ico"><meta name="generator" content="Hexo 5.4.2"></head><body><input id="navi" type="checkbox"><ul class="main-navication"><li><a href="/"><span>Home</span></a></li><li><a target="_blank" rel="noopener" href="https://github.com"><span>Github</span></a></li><li><a target="_blank" rel="noopener" href="https://www.v2ex.com/"><span>V2EX</span></a></li></ul><div class="wrapper" id="wrap"><div class="post-header"><label class="navi-button light" for="navi">MENU</label><img class="background" src="http://callfiles.ueibo.com/hexo-theme-laughing/post_background.jpg"><div class="post-title"><h1 class="title">MySQL数据库优化</h1><ul class="meta"><li><i class="icon icon-author"></i>Lester</li><li><i class="icon icon-clock"></i>3 Minutes</li><li><i class="icon icon-calendar"></i>September 16, 2017</li></ul></div></div><div class="article-content" style="max-width:800px"><p>本文大部分内容摘自简书网 <a target="_blank" rel="noopener" href="http://www.jianshu.com/p/fea61b518dc4">大牛的经验之谈：数据库查询速度优化技巧及解决方案</a>， 后续会结合自己在工作中的经历做一些针对性的案例分析。</p>
+<h2 id="1，尽可能减少表的全局扫描"><a href="#1，尽可能减少表的全局扫描" class="headerlink" title="1，尽可能减少表的全局扫描"></a>1，尽可能减少表的全局扫描</h2><ul>
+<li>减少where字段值null判断</li>
+<li>尽可能地将可能为null的字段设置一个可区分的默认值</li>
+<li>尽量避免在where子句中使用!= 或&lt;&gt;操作符</li>
+<li>尽量避免在where子句中使用or来连接条件</li>
+<li>尽量避免使用in和not in</li>
+</ul>
+<h2 id="2，不要在条件判断时进行算数运算"><a href="#2，不要在条件判断时进行算数运算" class="headerlink" title="2，不要在条件判断时进行算数运算"></a>2，不要在条件判断时进行算数运算</h2><p>所以不要在 where 子句中的“=”左边进行函数、算术运算或其他表达式运算,这样系统将可能无法正确使用索引。</p>
+<h2 id="3，利用exists代替in"><a href="#3，利用exists代替in" class="headerlink" title="3，利用exists代替in"></a>3，利用exists代替in</h2><h2 id="4，索引技巧"><a href="#4，索引技巧" class="headerlink" title="4，索引技巧"></a>4，索引技巧</h2><h4 id="并不是所有索引对查询都有效"><a href="#并不是所有索引对查询都有效" class="headerlink" title="并不是所有索引对查询都有效"></a>并不是所有索引对查询都有效</h4><ul>
+<li><p>SQL是根据表中数据来进行查询优化的，当索引列有大量数据重复时，SQL查询可能不会去利用索引，如一表中有字段sex，male、female几乎各一半，那么即使在sex上建了索引也对查询效率起不了作用。</p>
+</li>
+<li><p>索引要有区分度。</p>
+</li>
+</ul>
+<h4 id="索引并不是越多越好"><a href="#索引并不是越多越好" class="headerlink" title="索引并不是越多越好"></a>索引并不是越多越好</h4><p>索引固然可以提高相应的 select 的效率，但同时也降低了 insert 及 update 的效率，因为 insert 或 update 时有可能会重建索引，所以怎样建索引需要慎重考虑，视具体情况而定。一个表的索引数最好不要超过6个，若太多则应考虑一些不常使用到的列上建的索引是否有必要。</p>
+<h4 id="应尽可能的避免更新-clustered-索引数据列"><a href="#应尽可能的避免更新-clustered-索引数据列" class="headerlink" title="应尽可能的避免更新 clustered 索引数据列"></a>应尽可能的避免更新 clustered 索引数据列</h4><p>因为 clustered 索引数据列的顺序就是表记录的物理存储顺序，一旦该列值改变将导致整个表记录的顺序的调整，会耗费相当大的资源。若应用系统需要频繁更新 clustered 索引数据列，那么需要考虑是否应将该索引建为 clustered 索引。</p>
+<h4 id="尽量使用数字型字段"><a href="#尽量使用数字型字段" class="headerlink" title="尽量使用数字型字段"></a>尽量使用数字型字段</h4><p>若只含数值信息的字段尽量不要设计为字符型，这会降低查询和连接的性能，并会增加存储开销。这是因为引擎在处理查询和连接时会逐个比较字符串中每一个字符，而对于数字型而言只需要比较一次就够了。</p>
+<h2 id="5，创建数据库时应该注意地方"><a href="#5，创建数据库时应该注意地方" class="headerlink" title="5，创建数据库时应该注意地方"></a>5，创建数据库时应该注意地方</h2><h4 id="尽可能的使用-varchar-nvarchar-代替-char-nchar"><a href="#尽可能的使用-varchar-nvarchar-代替-char-nchar" class="headerlink" title="尽可能的使用 varchar/nvarchar 代替 char/nchar"></a>尽可能的使用 varchar/nvarchar 代替 char/nchar</h4><p>因为首先变长字段存储空间小，可以节省存储空间，其次对于查询来说，在一个相对较小的字段内搜索效率显然要高些。</p>
+<h4 id="用表变量来代替临时表。"><a href="#用表变量来代替临时表。" class="headerlink" title="用表变量来代替临时表。"></a>用表变量来代替临时表。</h4><ol>
+<li><p>如果表变量包含大量数据，请注意索引非常有限（只有主键索引）。</p>
+</li>
+<li><p>在新建临时表时，如果一次性插入数据量很大，那么可以使用 select into 代替 create table，避免造成大量 log ，以提高速度；如果数据量不大，为了缓和系统表的资源，应先create table，然后insert。</p>
+</li>
+<li><p>如果使用到了临时表，在存储过程的最后务必将所有的临时表显式删除，先 truncate table ，然后 drop table ，这样可以避免系统表的较长时间锁定。</p>
+</li>
+<li><p>避免频繁创建和删除临时表，以减少系统表资源的消耗。</p>
+</li>
+</ol>
+<h2 id="6，尽量避免使用游标"><a href="#6，尽量避免使用游标" class="headerlink" title="6，尽量避免使用游标"></a>6，尽量避免使用游标</h2><ol>
+<li><p>因为游标的效率较差，如果游标操作的数据超过1万行，那么就应该考虑改写。</p>
+</li>
+<li><p>使用基于游标的方法或临时表方法之前，应先寻找基于集的解决方案来解决问题，基于集的方法通常更有效。</p>
+</li>
+<li><p>与临时表一样，游标并不是不可使用。对小型数据集使用 FAST_FORWARD 游标通常要优于其他逐行处理方法，尤其是在必须引用几个表才能获得所需的数据时。在结果集中包括“合计”的例程通常要比使用游标执行的速度快。如果开发时间允许，基于游标的方法和基于集的方法都可以尝试一下，看哪一种方法的效果更好。</p>
+</li>
+</ol>
+<h2 id="7，数据放回时注意什么"><a href="#7，数据放回时注意什么" class="headerlink" title="7，数据放回时注意什么"></a>7，数据放回时注意什么</h2><ol>
+<li><p>尽量避免大事务操作，提高系统并发能力。这样可以有效提高系统的并发能力</p>
+</li>
+<li><p>尽量避免向客户端返回大数据量。若数据量过大，应该考虑相应需求是否合理。</p>
+</li>
+</ol>
+</div><div class="article-meta" style="max-width:800px"><div class="tags"><i class="icon icon-tag"></i><ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%90%8E%E7%AB%AF/" rel="tag">后端</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/" rel="tag">数据库</a><span class="tag-list-count">1</span></li></ul></div><div class="categories"><i class="icon icon-category"></i><ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a><span class="category-list-count">2</span></li></ul></div></div><div class="article-comment" style="max-width:800px"><div class="ds-thread" id="ds-thread" data-thread-key="cl4p7eeth000phvcsaeaqf7ff" data-title="MySQL数据库优化" data-url="http://yoursite.com/2017/09/16/%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BC%98%E5%8C%96/" site-name="ueibo"></div><script>var siteName = document.getElementById('ds-thread').getAttribute('site-name');
+var duoshuoQuery = {short_name: siteName};
+(function() {
+  var ds = document.createElement('script');
+  ds.type = 'text/javascript';ds.async = true;
+  ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+  ds.charset = 'UTF-8';
+  (document.getElementsByTagName('head')[0] 
+  || document.getElementsByTagName('body')[0]).appendChild(ds);
+})();</script></div><ul class="navication"><li class="home"><a href="/"><i class="icon icon-home"></i></a></li><li><a href="/2017/10/09/Django%E9%A1%B9%E7%9B%AE%E5%8D%95%E6%9C%BA%E9%83%A8%E7%BD%B2/"><i class="icon icon-arror-left"></i></a></li><li><a href="/2017/09/10/Python%E5%90%8E%E7%AB%AF%E5%BC%80%E5%8F%91%E2%80%94%E2%80%94%E5%A4%A7%E7%BA%B2/"><i class="icon icon-arror-right"></i></a></li></ul><div class="page-footer"><div class="top"><ul class="social"><li><a href="https://github.com/BoizZ" title="Github" target="_blank"><i class="icon icon-github"></i></a></li><li><a href="https://weibo.com/heqibang" title="Weibo" target="_blank"><i class="icon icon-weibo"></i></a></li><li><a href="https://www.segmentfault.com/u/bon" title="SegmentFault" target="_blank"><i class="icon icon-segmentfault"></i></a></li></ul></div><div class="bottom"><p class="copyright">© 2024 Lester<br><small>POWER BY <a href="https://hexo.io" target="_blank">HEXO</a></small><small>, THEME BY <a href="https://github.com/BoizZ/hexo-theme-laughing" target="_blank">LAUGHING</a></small></p></div></div></div><script>var wrap = document.getElementById('wrap');
+window.onload = function () {
+  wrap.className += ' done';
+}</script></body></html>

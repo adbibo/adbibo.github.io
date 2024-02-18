@@ -1,0 +1,108 @@
+<!DOCTYPE html><html lang="zh-cn"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=Edge"><meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"><meta name="format-detection" content="telephone=no"><meta name="format-detection" content="email=no"><meta name="description" content="君子所取者远，则必有所待，所就者大，则必有所忍，志大而量广，才有余而识具足，则必取其远，必就其大！！"><meta name="keywords" content="Hexo, Gruntjs, Nodejs, Reactjs, Vuejs"><title>程序员之路-shell篇 - Lester</title><link rel="stylesheet" href="/css/main_style.min.css"><link rel="icon" href="/favicon.ico"><meta name="generator" content="Hexo 5.4.2"></head><body><input id="navi" type="checkbox"><ul class="main-navication"><li><a href="/"><span>Home</span></a></li><li><a target="_blank" rel="noopener" href="https://github.com"><span>Github</span></a></li><li><a target="_blank" rel="noopener" href="https://www.v2ex.com/"><span>V2EX</span></a></li></ul><div class="wrapper" id="wrap"><div class="post-header"><label class="navi-button light" for="navi">MENU</label><img class="background" src="http://callfiles.ueibo.com/hexo-theme-laughing/post_background.jpg"><div class="post-title"><h1 class="title">程序员之路-shell篇</h1><ul class="meta"><li><i class="icon icon-author"></i>Lester</li><li><i class="icon icon-clock"></i>5 Minutes</li><li><i class="icon icon-calendar"></i>December 12, 2017</li></ul></div></div><div class="article-content" style="max-width:800px"><h1 id="查看命令帮助文档"><a href="#查看命令帮助文档" class="headerlink" title="查看命令帮助文档"></a>查看命令帮助文档</h1><h4 id="1-help-Command"><a href="#1-help-Command" class="headerlink" title="1.help Command"></a>1.help Command</h4><blockquote>
+<p>适用于内部命令, type.<br>举例：</p>
+</blockquote>
+<pre><code>$ type cd
+cd is a shell builtin
+$ help cd
+$ type ls
+ls is aliased to `ls --color=auto&apos;
+$ help ls
+-bash: help: no help topics match `ls&apos;.  Try `help help&apos; or `man -k ls&apos; or `info ls&apos;.
+</code></pre><h4 id="2-Command-–help-h"><a href="#2-Command-–help-h" class="headerlink" title="2. Command –help/-h"></a>2. Command –help/-h</h4><blockquote>
+<p>适用于外部命令<br>例如：</p>
+</blockquote>
+<pre><code>$ ls --help
+</code></pre><h4 id="3-man-Command"><a href="#3-man-Command" class="headerlink" title="3. man Command"></a>3. man Command</h4><blockquote>
+<p>举例：</p>
+</blockquote>
+<pre><code>$ man cd
+</code></pre><h1 id="文本展示"><a href="#文本展示" class="headerlink" title="文本展示"></a>文本展示</h1><h2 id="cat"><a href="#cat" class="headerlink" title="cat"></a>cat</h2><blockquote>
+<p>cat是显示文件夹的命令，这个大家都知道，</p>
+</blockquote>
+<h2 id="tac"><a href="#tac" class="headerlink" title="tac"></a>tac</h2><blockquote>
+<p>tac是cat的倒写，意思也和它是相反的。cat是从第一行显示到最后一行，而tac是从最后一行显示到第一行，</p>
+</blockquote>
+<h2 id="rev"><a href="#rev" class="headerlink" title="rev"></a>rev</h2><blockquote>
+<p>rev 则是从最后一个字符显示到第一个字符</p>
+</blockquote>
+<pre><code>$ cat file
+asdf
+sdfa
+
+$ tac
+sdfa
+asdf
+
+$ rev
+fdsa
+afds
+</code></pre><h2 id="统计"><a href="#统计" class="headerlink" title="统计"></a>统计</h2><pre><code>wc -l 文本文件 |文本文件行数
+</code></pre><h2 id="awk"><a href="#awk" class="headerlink" title="awk"></a>awk</h2><pre><code>awk -F &quot;,&quot;  &apos;&#123;print $1&#125;&apos; $file |uniq`  #从以“，”作分隔符的文件中读取第一列，并输出不重复的项
+
+cat $file |awk -F &quot;,&quot; &apos;&#123;print $1&#125;&apos; $file|uniq`
+</code></pre><h2 id="Linux下给普通用户添加Sudo权限"><a href="#Linux下给普通用户添加Sudo权限" class="headerlink" title="Linux下给普通用户添加Sudo权限"></a>Linux下给普通用户添加Sudo权限</h2><blockquote>
+<p>一般在Linux下创建用户后不能直接使用sudo命令，所以需要在/etc/sudoers配置中添加用户的 权限。</p>
+</blockquote>
+<blockquote>
+<p>首先使用有sudo权限的账户登录系统，然后运行 # sudo nano /etc/sudoers ，找到 root ALL=(ALL) ALL 后，在下一行添加 UserName ALL=(ALL) ALL 即可。<br>使用CTRL+指定字母操作</p>
+</blockquote>
+<h2 id="ssh免密登录"><a href="#ssh免密登录" class="headerlink" title="ssh免密登录"></a>ssh免密登录</h2><blockquote>
+<p>平时工作难免会使用到多台服务器，从一台服务器ssh登录另一台服务器就输入密码，太影响效率。</p>
+</blockquote>
+<h3 id="通过以下方法可以免密登录。"><a href="#通过以下方法可以免密登录。" class="headerlink" title="通过以下方法可以免密登录。"></a>通过以下方法可以免密登录。</h3><ol>
+<li><p>在A机下生成公钥/私钥对。</p>
+<p> $ssh-keygen -t rsa -P</p>
+</li>
+<li><p>把A机下的id_rsa.pub复制到B机下，在B机的.ssh/authorized_keys文件里，我用scp复制。</p>
+<p> $scp .ssh/id_rsa.pub user@host:/path/to/user/.ssh/id_rsa.pub</p>
+<p> 由于还没有免密码登录的，所以要输入密码。</p>
+</li>
+<li><p>B机把从A机复制的id_rsa.pub添加到.ssh/authorzied_keys文件里。</p>
+<p> $cat .ssh/id_rsa.pub&gt;&gt;.ssh/authorized_keys<br> chmod 600 .ssh/authorized_keys<br> authorized_keys的权限要是600。</p>
+</li>
+</ol>
+<h2 id="端口"><a href="#端口" class="headerlink" title="端口"></a>端口</h2><ul>
+<li>netstat -anp 查看端口使用情况</li>
+<li>lsof -i:$PORT 查看使用该端口($PORT)的程序</li>
+<li>cat /etc/services 也可以查看端口使用情况</li>
+<li>chkconfig 查看系统服务的开启状态</li>
+<li></li>
+</ul>
+<h1 id="去除linux系统文本中的-M"><a href="#去除linux系统文本中的-M" class="headerlink" title="去除linux系统文本中的^M"></a>去除linux系统文本中的^M</h1><blockquote>
+<p>对于回车符的定义：</p>
+</blockquote>
+<pre><code>windows：0D0A
+unixlinux: 0A
+MAC: 0D
+</code></pre><p>比较快捷的去除这些符号的方法有这么几种：</p>
+<h2 id="1-vim："><a href="#1-vim：" class="headerlink" title="1. vim："></a>1. vim：</h2><p> 使用vim打开文本文件</p>
+<pre><code>vi dos.txt
+##命令模式下输入
+:set fileformat=unix
+:w
+
+## VI下使用正则表达式替换
+:g/^M/s/^M//
+## 或者
+:%s/^M//g
+</code></pre><h2 id="2-sed"><a href="#2-sed" class="headerlink" title="2. sed"></a>2. sed</h2><pre><code>sed ’s/^M//’ filename &gt; tmp_filename
+</code></pre><h2 id="3-tr"><a href="#3-tr" class="headerlink" title="3. tr"></a>3. tr</h2><pre><code>tr -d &quot; &quot;
+</code></pre><h2 id="4-dos2unix"><a href="#4-dos2unix" class="headerlink" title="4. dos2unix"></a>4. dos2unix</h2><pre><code>dos2unix filename
+</code></pre><h1 id="时间计算"><a href="#时间计算" class="headerlink" title="时间计算"></a>时间计算</h1><p><a target="_blank" rel="noopener" href="http://www.linuxidc.com/Linux/2013-03/81940.htm">以下参考链接</a></p>
+<h5 id="计算5分钟前的时间"><a href="#计算5分钟前的时间" class="headerlink" title="计算5分钟前的时间"></a>计算5分钟前的时间</h5><pre><code>ymdhmis=`perl -e &quot;print sprintf &apos;%04d-%02d-%02d %02d:%02d:%02d&apos;,(localtime(time()-300))[5]+1900,(localtime(time()-300))[4]+1,(localtime(time()-300))[3],(localtime(time()-300))[2],(localtime(time()-300))[1],(localtime(time()-300))[0]&quot;`
+echo $ymdhmis
+</code></pre><h5 id="计算5分钟前的日期"><a href="#计算5分钟前的日期" class="headerlink" title="计算5分钟前的日期"></a>计算5分钟前的日期</h5><pre><code>ymd=`perl -e &quot;print sprintf &apos;%04d-%02d-%02d&apos;,(localtime(time()-300))[5]+1900,(localtime(time()-300))[4]+1,(localtime(time()-300))[3]&quot;`
+echo $ymd
+</code></pre></div><div class="article-meta" style="max-width:800px"><div class="tags"><i class="icon icon-tag"></i><ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Shell/" rel="tag">Shell</a><span class="tag-list-count">1</span></li></ul></div><div class="categories"><i class="icon icon-category"></i><ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言</a><span class="category-list-count">5</span></li></ul></div></div><div class="article-comment" style="max-width:800px"><div class="ds-thread" id="ds-thread" data-thread-key="cl4p7eeti0013hvcsbnrzf320" data-title="程序员之路-shell篇" data-url="http://yoursite.com/2017/12/12/%E7%A8%8B%E5%BA%8F%E5%91%98%E4%B9%8B%E8%B7%AF-shell%E7%AF%87/" site-name="ueibo"></div><script>var siteName = document.getElementById('ds-thread').getAttribute('site-name');
+var duoshuoQuery = {short_name: siteName};
+(function() {
+  var ds = document.createElement('script');
+  ds.type = 'text/javascript';ds.async = true;
+  ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+  ds.charset = 'UTF-8';
+  (document.getElementsByTagName('head')[0] 
+  || document.getElementsByTagName('body')[0]).appendChild(ds);
+})();</script></div><ul class="navication"><li class="home"><a href="/"><i class="icon icon-home"></i></a></li><li><a href="/2022/04/23/%E6%89%8B%E6%8A%8A%E6%89%8B%E6%95%99%E4%BD%A0%E5%A6%82%E4%BD%95%E6%90%AD%E5%BB%BA%E5%8D%95%E6%9C%BAspark-iceberg%E7%8E%AF%E5%A2%83/"><i class="icon icon-arror-left"></i></a></li><li><a href="/2017/12/01/%E7%AE%80%E5%8D%95%E6%95%B0%E6%8D%AE%E5%BC%80%E5%8F%91%E6%B5%81%E7%A8%8B/"><i class="icon icon-arror-right"></i></a></li></ul><div class="page-footer"><div class="top"><ul class="social"><li><a href="https://github.com/BoizZ" title="Github" target="_blank"><i class="icon icon-github"></i></a></li><li><a href="https://weibo.com/heqibang" title="Weibo" target="_blank"><i class="icon icon-weibo"></i></a></li><li><a href="https://www.segmentfault.com/u/bon" title="SegmentFault" target="_blank"><i class="icon icon-segmentfault"></i></a></li></ul></div><div class="bottom"><p class="copyright">© 2024 Lester<br><small>POWER BY <a href="https://hexo.io" target="_blank">HEXO</a></small><small>, THEME BY <a href="https://github.com/BoizZ/hexo-theme-laughing" target="_blank">LAUGHING</a></small></p></div></div></div><script>var wrap = document.getElementById('wrap');
+window.onload = function () {
+  wrap.className += ' done';
+}</script></body></html>
